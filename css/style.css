@@ -1,0 +1,247 @@
+.container {
+position: relative;
+}
+
+body {
+background: linear-gradient(90deg, rgba(61,92,75,1) 0%, rgba(9,121,52,1) 35%, rgba(6,62,107,1) 100%);
+height: 100vh;
+font-family: 'IBM Plex Sans';
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0;
+padding: 0;
+}
+
+form {
+background: rgba(255, 255, 255, .3);
+padding: 3rem;
+height: 320px;
+border-radius: 20px;
+border-left: 1px solid rgba(255, 255, 255, .3);
+border-top: 1px solid rgba(255, 255, 255, .3);
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+-moz-backdrop-filter: blur(10px);
+box-shadow: 20px 20px 40px -6px rgba(0, 0, 0, .2);
+text-align: center;
+}
+
+p {
+color: white;
+font-weight: 500;
+opacity: .7;
+font-size: 1.4rem;
+margin-bottom: 60px;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, .2);
+}
+
+a {
+text-decoration: none;
+color: #ddd;
+font-size: 12px;
+}
+
+a:hover {
+text-shadow: 2px 2px 6px #00000040;
+}
+
+a:active {
+text-shadow: none;
+}
+
+input {
+background: transparent;
+border: none;
+border-left: 1px solid rgba(255, 255, 255, .3);
+border-top: 1px solid rgba(255, 255, 255, .3);
+padding: 1rem;
+width: 200px;
+border-radius: 50px;
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+-moz-backdrop-filter: blur(5px);
+box-shadow: 4px 4px 60px rgba(0, 0, 0, .2);
+color: white;
+font-weight: 500;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, .2);
+transition: all .3s;
+margin-bottom: 2em;
+}
+
+input[type="button"] {
+margin-top: 10px;
+width: 150px;
+font-size: 1rem;
+cursor: pointer;
+}
+
+::placeholder {
+color: #fff;
+}
+
+.logo {
+position: absolute;
+top: 0px;
+left: 0px;
+color: white;
+font-weight: bold;
+font-size: 36px;
+}
+
+.btn-deconnexion {
+position: absolute;
+top: 20px;
+right: 20px;
+background: rgba(255, 255, 255, 0.3);
+color: white;
+border: 1px solid rgba(255, 255, 255, 0.3);
+padding: 10px 20px;
+border-radius: 10px;
+font-family: 'IBM Plex Sans', sans-serif;
+cursor: pointer;
+transition: all 0.3s ease;
+box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.2);
+backdrop-filter: blur(5px);
+}
+
+.btn-deconnexion:hover {
+background: rgba(255, 255, 255, 0.5);
+box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Définition de la police en IBM Plex Sans */
+.ibm-plex-sans-thin {
+font-family: "IBM Plex Sans", serif;
+font-weight: 100;
+font-style: normal;
+}
+
+.ibm-plex-sans-extralight {
+font-family: "IBM Plex Sans", serif;
+font-weight: 200;
+font-style: normal;
+}
+
+.ibm-plex-sans-light {
+font-family: "IBM Plex Sans", serif;
+font-weight: 300;
+font-style: normal;
+}
+
+.ibm-plex-sans-regular {
+font-family: "IBM Plex Sans", serif;
+font-weight: 400;
+font-style: normal;
+}
+
+.ibm-plex-sans-medium {
+font-family: "IBM Plex Sans", serif;
+font-weight: 500;
+font-style: normal;
+}
+
+.ibm-plex-sans-semibold {
+font-family: "IBM Plex Sans", serif;
+font-weight: 600;
+font-style: normal;
+}
+
+.ibm-plex-sans-bold {
+font-family: "IBM Plex Sans", serif;
+font-weight: 700;
+font-style: normal;
+}
+
+.ibm-plex-sans-thin-italic {
+font-family: "IBM Plex Sans", serif;
+font-weight: 100;
+font-style: italic;
+}
+
+.ibm-plex-sans-extralight-italic {
+font-family: "IBM Plex Sans", serif;
+font-weight: 200;
+font-style: italic;
+}
+
+.ibm-plex-sans-light-italic {
+font-family: "IBM Plex Sans", serif;
+font-weight: 300;
+font-style: italic;
+}
+
+.ibm-plex-sans-regular-italic {
+font-family: "IBM Plex Sans", serif;
+font-weight: 400;
+font-style: italic;
+}
+
+.ibm-plex-sans-medium-italic {
+font-family: "IBM Plex Sans", serif;
+font-weight: 500;
+font-style: italic;
+}
+
+.ibm-plex-sans-semibold-italic {
+font-family: "IBM Plex Sans", serif;
+font-weight: 600;
+font-style: italic;
+}
+
+.ibm-plex-sans-bold-italic {
+font-family: "IBM Plex Sans", serif;
+font-weight: 700;
+font-style: italic;
+}
+.nolamp {
+  background: linear-gradient(90deg, rgba(6,62,107,1) 0%, rgba(61,92,75,1) 35%, rgba(9,121,52,1) 100%);
+  border-radius: 20px;
+  width: 700px;
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.nolamptext, .detectlamptext, .Bluetooth, .QR, .serial {
+  margin: 10px 0;
+}
+
+.detectlamptext {
+  font-size: 3em;
+  font-family: "IBM Plex Sans", serif;
+}
+
+.Bluetooth, .QR, .serial {
+  width: 400px;
+  height: 75px;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+}
+.btn-deconnexion {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+}
