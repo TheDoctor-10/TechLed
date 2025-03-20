@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Lampes</title>
+    <link rel="stylesheet" href="css/dahsboard.css">
+</head>
+<body>
+    <header>
+        <img class="logo" src="logo.png">
+        <h1>Gestion des Lampes</h1>
+        <button class="btn-deconnexion" onclick="logout()">Déconnexion</button>
+    </header>
+    <main>
+        <section class="column">
+            <section id="toutes-mes-lampes">
+                <h2>Toutes mes lampes</h2>
+                <ul>
+                    <li>ID: XV20TOX12100 (12/05/2025) <button>Éditer</button> <button>Supprimer</button> <button>Luminosité</button> <button>Power</button></li>
+                    <li>ID: XG90XFC47903 (12/05/2025) <button>Éditer</button> <button>Supprimer</button> <button>Luminosité</button> <button>Power</button></li>
+                    <li>ID: BI90CIP84400 (12/05/2025) <button>Éditer</button> <button>Supprimer</button> <button>Luminosité</button> <button>Power</button></li>
+                </ul>
+            </section>
+        </section>
+        <section class="column">
+            <section id="detecter-une-nouvelle-lampe">
+                <h2>Détecter une nouvelle lampe</h2>
+                <button>Détecter via Bluetooth</button>
+                <button>Détecter via Wi-Fi</button>
+            </section>
+            <section id="parametres-activation">
+                <h2>Paramètres d'activation</h2>
+                <!-- Contenu des paramètres -->
+            </section>
+        </section>
+        <section class="column">
+            <section id="modify-activation-date">
+                <h2>Modifier la date d'activation</h2>
+                <p>dim. 15 sept. 06:00 - 20:00</p>
+                <button>Ajouter un nouvel horaire</button>
+            </section>
+            <section id="lamp-info">
+                <h2>Informations de la lampe</h2>
+                <p class="error">ERREUR QUI NÉCESSITE VOTRE ATTENTION</p>
+                <p>Aucune connexion Bluetooth</p>
+                <p>Un problème est survenu</p>
+                <p>La batterie est en bon état</p>
+                <p>La lampe est allumée et en bon état</p>
+            </section>
+        </section>
+        <section class="column">
+            <section id="change-color">
+                <h2>Changer la couleur</h2>
+                <input type="color" value="#000000">
+            </section>
+        </section>
+    </main>
+
+    <script>
+        if (!sessionStorage.getItem('authenticated')) {
+            window.location.href = 'index.html';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('authenticated');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
