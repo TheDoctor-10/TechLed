@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+        
     </style>
 </head>
 <body>
@@ -30,56 +34,48 @@
             </div>
             <div class="btn">
             <button class="button1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Connexion&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
-            <button class="button2">Inscription</button>
+            <a href="sign in.html" class="button2">Inscription</a>
             </div>
-            <button class="button3" type="submit" formaction="Forgot pass.html">Mot de passe oublié ?</button>
+            <button class="button3" type="button" onclick="window.location.href='Forgot pass.html'">Mot de passe oublié ?</button>
         </form>
         
     </header>
 
 <script>
-  const usernameInput = document.querySelectorAll('.input-field')[0];
-  const passwordInput = document.querySelectorAll('.input-field')[1];
-  const loginButton = document.querySelector('.button1');
-  const signupButton = document.querySelector('.button2');
+const firebaseConfig = {
+  apiKey: "AIzaSyCCvoXrrQLiH7rK-YH4Wa3K5xO7jg4UB5M",
+  authDomain: "techled-1c800.firebaseapp.com",
+  projectId: "techled-1c800",
+  storageBucket: "techled-1c800.appspot.com",
+  messagingSenderId: "1016231820720",
+  appId: "1:1016231820720:web:7453b90d3afa7ee811ea75"
+};
 
-  // Connexion
-  loginButton.addEventListener('click', function (event) {
-    event.preventDefault();
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-    const storedPassword = localStorage.getItem(username);
+// On récupère les inputs et boutons
+const usernameInput = document.querySelectorAll('.input-field')[0];
+const passwordInput = document.querySelectorAll('.input-field')[1];
+const loginButton = document.querySelector('.button1'); 
+// ⚠️ Dans ton HTML, "Connexion" est .button1
+// "Inscription" est un <a>, donc pas un bouton JS ici
 
-    if (storedPassword && storedPassword === password) {
-      sessionStorage.setItem('authenticated', 'true');
+// Connexion
+loginButton.addEventListener('click', function (event) {
+  event.preventDefault();
+  const email = usernameInput.value.trim();
+  const password = passwordInput.value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
       alert('Connexion réussie !');
-      window.location.href = 'dashboard.html'; // à adapter si besoin
-    } else {
-      alert('Nom d\'utilisateur ou mot de passe incorrect');
-    }
-  });
-
-  // Inscription
-  signupButton.addEventListener('click', function (event) {
-    event.preventDefault();
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!username || !password) {
-      alert('Veuillez remplir les deux champs.');
-      return;
-    }
-
-    if (localStorage.getItem(username)) {
-      alert('Ce nom d\'utilisateur est déjà utilisé.');
-    } else {
-      localStorage.setItem(username, password);
-      alert('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
-      usernameInput.value = '';
-      passwordInput.value = '';
-    }
-  });
+      window.location.href = 'dashboard.html';
+    })
+    .catch((error) => {
+      alert('Erreur : ' + error.message);
+    });
+});
 </script>
 </body>
 </html>
