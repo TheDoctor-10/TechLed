@@ -1,81 +1,122 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
-        
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechLED - La lumière connectée</title>
+  
+  <!-- Police Ubuntu -->
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <img class="logo" src="logo.png">
-        <form class="form">
-            <p id="heading">Connexion</p>
-            <div class="field">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M13.106 7.222c0-2.967-2.249-5.032-5.482-5.032-3.35 0-5.646 2.318-5.646 5.702 0 3.493 2.235 5.708 5.762 5.708.862 0 1.689-.123 2.304-.335v-.862c-.43.199-1.354.328-2.29.328-2.926 0-4.813-1.88-4.813-4.798 0-2.844 1.921-4.881 4.594-4.881 2.735 0 4.608 1.688 4.608 4.156 0 1.682-.554 2.769-1.416 2.769-.492 0-.772-.28-.772-.76V5.206H8.923v.834h-.11c-.266-.595-.881-.964-1.6-.964-1.4 0-2.378 1.162-2.378 2.823 0 1.737.957 2.906 2.379 2.906.8 0 1.415-.39 1.709-1.087h.11c.081.67.703 1.148 1.503 1.148 1.572 0 2.57-1.415 2.57-3.643zm-7.177.704c0-1.197.54-1.907 1.456-1.907.93 0 1.524.738 1.524 1.907S8.308 9.84 7.371 9.84c-.895 0-1.442-.725-1.442-1.914z"></path>
-            </svg>
-              <input autocomplete="off" placeholder="Nom d'utilisateur" class="input-field" type="text">
-            </div>
-            <div class="field">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
-            </svg>
-              <input placeholder="Mot de passe" class="input-field" type="password">
-            </div>
-            <div class="btn">
-            <button class="button1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Connexion&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
-            <a href="sign in.html" class="button2">Inscription</a>
-            </div>
-            <button class="button3" type="button" onclick="window.location.href='Forgot pass.html'">Mot de passe oublié ?</button>
-        </form>
-        
-    </header>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCCvoXrrQLiH7rK-YH4Wa3K5xO7jg4UB5M",
-  authDomain: "techled-1c800.firebaseapp.com",
-  projectId: "techled-1c800",
-  storageBucket: "techled-1c800.appspot.com",
-  messagingSenderId: "1016231820720",
-  appId: "1:1016231820720:web:7453b90d3afa7ee811ea75"
-};
+  <!-- Header -->
+  <header>
+    <div class="logo">TechLED</div>
+    <nav id="userContainer">
+      <button id="authBtn" class="btn-outline">Connexion / Inscription</button>
+    </nav>
+  </header>
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+  <!-- Main -->
+  <main>
+    <section class="hero">
+      <h1>La lumière connectée pour demain</h1>
+      <p>Imaginez une lampe connectée à votre vie. Gérez l’allumage, l’intensité et la couleur depuis votre smartphone.</p>
+      <button class="btn-primary" id="connectLamp">Connecter ma lampe</button>
+    </section>
 
-// On récupère les inputs et boutons
-const usernameInput = document.querySelectorAll('.input-field')[0];
-const passwordInput = document.querySelectorAll('.input-field')[1];
-const loginButton = document.querySelector('.button1'); 
-// ⚠️ Dans ton HTML, "Connexion" est .button1
-// "Inscription" est un <a>, donc pas un bouton JS ici
+    <section class="features">
+      <h2>📍 Gérez toutes vos lampes sur un seul lieu</h2>
+      <p>Centralisez la gestion de vos lampes via une interface unique.</p>
+      <button class="btn-secondary">Détecter une lampe connectée !</button>
+    </section>
 
-// Connexion
-loginButton.addEventListener('click', function (event) {
-  event.preventDefault();
-  const email = usernameInput.value.trim();
-  const password = passwordInput.value;
+    <section class="control">
+      <h2>💻 Gérez vos lampes facilement</h2>
+      <p>Utilisez votre ordinateur ou smartphone pour contrôler vos lampes TechLED.</p>
+    </section>
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      alert('Connexion réussie !');
-      window.location.href = 'dashboard.html';
-    })
-    .catch((error) => {
-      alert('Erreur : ' + error.message);
-    });
-});
-</script>
+    <section class="steps">
+      <h2>🔍 Détecter une lampe !</h2>
+      <ol>
+        <li>Activer le Bluetooth</li>
+        <li>Connecter la lampe</li>
+        <li>Gérer la lampe</li>
+      </ol>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="newsletter">
+      <p>📬 Abonnez-vous à notre newsletter</p>
+      <input type="email" placeholder="Votre email">
+      <button class="btn-outline">S'abonner</button>
+    </div>
+    <div class="footer-links">
+      <a href="#">Mentions légales</a> | <a href="#">CGU</a>
+    </div>
+    <div class="socials">
+      <span>Suivez-nous :</span>
+      <a href="#">🐦 Twitter</a>
+      <a href="#">💼 LinkedIn</a>
+    </div>
+  </footer>
+
+  <!-- Modal Auth -->
+  <div id="authModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <div class="modal-tabs">
+        <button class="tab-btn active" id="loginTab">Connexion</button>
+        <button class="tab-btn" id="signupTab">Inscription</button>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Mot de passe</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit" class="btn-auth">Se connecter</button>
+      </form>
+      <form id="signupForm" style="display:none;">
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Mot de passe</label>
+          <input type="password" id="signupPassword" required>
+        </div>
+        <button type="submit" class="btn-auth">S'inscrire</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Reset Password -->
+  <div id="resetModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Réinitialiser mot de passe</h2>
+      <form id="resetForm">
+        <div class="form-group">
+          <label for="resetEmail">Email</label>
+          <input type="email" id="resetEmail" required>
+        </div>
+        <button type="submit" class="btn-auth">Envoyer email de réinitialisation</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="javascript/auth.js"></script>
 </body>
 </html>

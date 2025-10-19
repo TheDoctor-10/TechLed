@@ -1,170 +1,107 @@
-* {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: '11px'
+/* Reset */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { 
+  font-family:'Ubuntu',sans-serif; 
+  font-size:16px; 
+  line-height:1.6; 
+  background:#f4fdf7; 
+  color:#333; 
 }
 
-body {
-background: linear-gradient(90deg, rgba(61,92,75,1) 0%, rgba(9,121,52,1) 35%, rgba(6,62,107,1) 100%);
-height: 100vh;
-font-family: 'Ubuntu', sans-serif;
-display: flex;
-align-items: center;
-justify-content: center;
-margin: 0;
-padding: 0;
+/* Header */
+header { 
+  background:#2ecc71; 
+  color:white; 
+  padding:1rem 2rem; 
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center; 
+}
+.logo { font-size:1.5rem; font-weight:bold; }
+nav .btn-outline, .user-icon { 
+  background:white; 
+  color:#2ecc71; 
+  border:none; 
+  padding:0.5rem 1rem; 
+  border-radius:5px; 
+  cursor:pointer; 
+  font-family:'Ubuntu',sans-serif; 
+  font-size:16px;
 }
 
-.logo {
-position: absolute;
-top: 0px;
-left: 0px;
-width: 190px;
-color: white;
-font-weight: bold;
-font-size: 36px;
+/* Icône utilisateur ronde */
+.user-icon {
+  background:white;
+  border:none;
+  border-radius:50%;
+  padding:0.5rem 0.6rem;
+  cursor:pointer;
+  font-size:1.5rem;
+  box-shadow:0 2px 5px rgba(0,0,0,0.15);
+  transition:0.2s;
+}
+.user-icon:hover {
+  transform:scale(1.1);
+  box-shadow:0 4px 10px rgba(0,0,0,0.25);
 }
 
-.form {
-  display: flex;
+/* Menu utilisateur vertical */
+.user-menu {
+  display:none;
+  position:absolute;
+  top:55px;
+  right:10px;
+  background:white;
+  border-radius:8px;
+  padding:0.5rem 1rem;
   flex-direction: column;
-  gap: 10px;
-  padding-left: 2em;
-  padding-right: 2em;
-  padding-bottom: 0.4em;
-  background-color: #171717;
-  border-radius: 25px;
-  transition: .4s ease-in-out;
+  gap:0.5rem;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  min-width:180px;
+  z-index:1000;
+}
+.user-menu button {
+  width:100%;
+  background:#2ecc71;
+  color:white;
+  border:none;
+  padding:0.5rem;
+  border-radius:5px;
+  cursor:pointer;
+  font-size:0.95rem;
+  transition:0.2s;
+}
+.user-menu button:hover {
+  background:#27ae60;
 }
 
-.form:hover {
-  transform: scale(1.05);
-  border: 1px solid black;
-}
+/* Hero, Sections, Footer etc. */
+.hero { text-align:center; padding:3rem 2rem; background:white; }
+.hero h1, h2, h3, p, li, label, button, input { font-size:16px; }
+.hero h1 { margin-bottom:1rem; }
+.hero p { max-width:600px; margin:0 auto 2rem; }
+.btn-primary { background:#2ecc71; color:white; border:none; padding:1rem 2rem; border-radius:5px; transition: transform 0.2s, box-shadow 0.2s; cursor:pointer; }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(46,204,113,0.4); }
+.btn-secondary { background:#27ae60; color:white; border:none; padding:0.8rem 1.5rem; border-radius:5px; cursor:pointer; margin-top:1rem; transition: transform 0.2s, box-shadow 0.2s; }
+.btn-secondary:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(39,174,96,0.4); }
 
-#heading {
-  text-align: center;
-  margin: 2em;
-  color: rgb(255, 255, 255);
-  font-size: 1.2em;
-}
+section { padding:2rem; margin:1rem auto; max-width:800px; background:#eafaf1; border-radius:8px; }
+footer { background:#2ecc71; color:white; padding:2rem; text-align:center; }
+footer input, footer button { font-family:'Ubuntu',sans-serif; font-size:16px; padding:0.5rem; border-radius:5px; border:none; }
+footer .btn-outline { background:white; color:#2ecc71; }
 
-.field {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  border-radius: 25px;
-  padding: 0.6em;
-  border: none;
-  outline: none;
-  color: white;
-  background-color: #171717;
-  box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
-}
+/* Modal */
+.modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:1000; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
+.modal.active { opacity:1; pointer-events:auto; }
+.modal-content { background:white; border-radius:12px; padding:2rem; width:90%; max-width:400px; text-align:center; position:relative; animation:fadeIn 0.3s ease; }
+.modal-tabs { display:flex; justify-content:center; margin-bottom:1.5rem; }
+.tab-btn { flex:1; padding:0.6rem; cursor:pointer; border:none; background:#f1f1f1; font-weight:bold; transition:background 0.3s; }
+.tab-btn.active { background:#2ecc71; color:white; }
+.form-group { text-align:left; margin-bottom:1rem; }
+.form-group label { display:block; font-size:0.95rem; margin-bottom:0.3rem; color:#444; }
+.form-group input { width:100%; padding:0.7rem; border:1px solid #ccc; border-radius:6px; font-size:0.95rem; }
+.btn-auth { width:100%; background:#2ecc71; color:white; padding:0.9rem; border:none; border-radius:6px; font-weight:bold; margin-top:0.5rem; cursor:pointer; transition:transform 0.2s,box-shadow 0.2s; }
+.btn-auth:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(46,204,113,0.4); }
+.close-btn { position:absolute; top:12px; right:18px; font-size:1.5rem; cursor:pointer; color:#666; }
 
-.input-icon {
-  height: 1.3em;
-  width: 1.3em;
-  fill: white;
-}
-
-.input-field {
-  background: none;
-  border: none;
-  outline: none;
-  width: 100%;
-  color: #d3d3d3;
-}
-
-button,
-a.button2 {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 14px;
-}
-
-.form .btn {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  margin-top: 1.5em;
-}
-
-.button1 {
-  padding: 0.5em;
-  padding-left: 1.1em;
-  padding-right: 1.1em;
-  border-radius: 5px;
-  margin-right: 0.5em;
-  border: none;
-  outline: none;
-  transition: .4s ease-in-out;
-  background-color: #252525;
-  color: white;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-
-.button1:hover {
-  background-color: black;
-  color: white;
-}
-
-.button2 {
-  padding: 0.5em;
-  padding-left: 2.3em;
-  padding-right: 2.3em;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-  transition: .4s ease-in-out;
-  background-color: #252525;
-  color: white;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-
-.button2:hover {
-  background-color: black;
-  color: white;
-}
-
-.button3 {
-  margin-bottom: 3em;
-  padding: 0.5em;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-  transition: .4s ease-in-out;
-  background-color: #252525;
-  color: white;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-
-.button3:hover {
-  background-color: red;
-  color: white;
-}
-
-.button1,
-.button2,
-a.button1,
-a.button2 {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 16px;
-  padding: 0.5em 2em;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-  background-color: #252525;
-  color: white;
-  text-decoration: none;
-  cursor: pointer;
-  display: inline-block;
-  text-align: center;
-  min-width: 180px; /* ajuste selon ton besoin */
-  box-sizing: border-box;
-}
+@keyframes fadeIn { from{ transform:scale(0.95); opacity:0; } to{ transform:scale(1); opacity:1; } }

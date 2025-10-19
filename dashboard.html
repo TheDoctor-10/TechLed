@@ -2,125 +2,57 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestion des Lampes</title>
-  <link rel="stylesheet" href="css/dahsboard.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;700&family=Ubuntu:wght@300;400;500;700&display=swap');
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechLED - Mon Compte</title>
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
+
   <header>
-    <img class="logo" src="logo.png" alt="Logo">
-    <h1>Gestion des Lampes</h1>
-    <p id="welcome"></p> <!-- Message de bienvenue -->
-    <button class="btn-deconnexion" onclick="logout()">Déconnexion</button>
+    <div class="logo">TechLED</div>
+    <div id="userContainer"></div>
   </header>
 
   <main>
-    <section class="column" id="toutes-mes-lampes">
-      <h2><img src="" alt=""> Toutes mes lampes</h2>
+    <aside class="lamp-list">
+      <h2>Toutes mes lampes</h2>
       <ul>
-        <section>
-          <h3>ID: XV20TOX12100 <button><img src="" alt=""></button> <button>LED</button></h3>
-          <p>12/05/2025</p>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-          <h6>Afficher plus</h6>
-        </section>
+        <li>XV2OTOX12100 <span>12/05/2025</span></li>
+        <li>XG90XFC47903 <span>12/05/2025</span></li>
+        <li class="active">BI90CIP84400 <span>12/05/2025</span></li>
       </ul>
-    </section>
+      <a href="#">Afficher plus</a>
+    </aside>
 
-    <section class="column">
-      <section id="detecter-une-nouvelle-lampe">
-        <h2><img src="" alt=""> Détecter une nouvelle lampe</h2>
-        <button><img src="" alt=""></button>
-        <button><img src="" alt=""></button>
-        <button><img src="" alt=""></button>
-      </section>
-
-      <section id="parametres-activation">
-        <h2><img src="" alt=""> Paramètres d'activation</h2>
-        <section>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-          <button><img src="" alt=""></button>
-        </section>
-        <section>
-          <p>Une option qui change un truc <button></button></p>
-          <p>Une option qui change un truc <button></button></p>
-          <p>Une option qui change un truc <button></button></p>
-          <p>Une option qui change un truc <button></button></p>
-          <p>Une option qui change un truc <button></button></p>
-        </section>
-      </section>
-    </section>
-
-    <section class="column">
-      <section id="Modifier-la-date-d-activation">
-        <h2><img src="" alt=""> Modifier la date d'activation</h2>
-        <section>
-          <img src="" alt="">
-          <p>dim. 15 sept. — dim. 15 sept.</p>
-          <p>06:00 AM — 08:00 PM</p>
-        </section>
-        <h6>Ajouter un nouvel horaire</h6>
-      </section>
-
-      <section id="Informations-lampe">
-        <h2><img src="" alt=""> Informations de la lampe</h2>
-        <p class="error">ERREUR QUI NÉCESSITE VOTRE ATTENTION</p>
-        <p>Aucune connexion Bluetooth</p>
-        <p>Un problème est survenu</p>
-        <p>La batterie est en bon état</p>
-        <p>La lampe est allumée et en bon état</p>
-      </section>
-    </section>
-
-    <section class="column">
-      <section id="change-color">
-        <h2>Changer la couleur</h2>
-        <input type="color" value="#000000">
-      </section>
+    <section class="dashboard">
+      <div class="card">
+        <h3>Détecter une nouvelle lampe</h3>
+        <div class="icons">
+          <span>📶</span>
+          <span>🔵</span>
+          <span>✏️</span>
+        </div>
+      </div>
+      <!-- Autres cards inchangées -->
     </section>
   </main>
 
-  <!-- Firebase -->
+  <div id="resetModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Réinitialiser le mot de passe</h2>
+      <form id="resetForm">
+        <div class="form-group">
+          <label for="resetEmail">Email</label>
+          <input type="email" id="resetEmail" required>
+        </div>
+        <button type="submit" class="btn-auth">Envoyer le mail</button>
+      </form>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCCvoXrrQLiH7rK-YH4Wa3K5xO7jg4UB5M",
-      authDomain: "techled-1c800.firebaseapp.com",
-      projectId: "techled-1c800",
-      storageBucket: "techled-1c800.appspot.com",
-      messagingSenderId: "1016231820720",
-      appId: "1:1016231820720:web:7453b90d3afa7ee811ea75"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    // Vérifie l'état de connexion
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("welcome").textContent = `Bienvenue ${user.email}`;
-      } else {
-        window.location.href = 'index.html';
-      }
-    });
-
-    // Déconnexion
-    function logout() {
-      auth.signOut().then(() => {
-        window.location.href = 'index.html';
-      });
-    }
-  </script>
+  <script src="javascript/auth.js"></script>
 </body>
 </html>
