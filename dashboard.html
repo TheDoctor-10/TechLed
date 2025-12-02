@@ -8,51 +8,110 @@
 </head>
 <body>
 
+  <!-- Header -->
   <header>
     <div class="logo">TechLED</div>
-    <div id="userContainer"></div>
+    <div id="userContainer">
+      <button class="user-icon" id="userIcon">👤</button>
+      <div class="user-menu" id="userMenu">
+        <button id="profileBtn">Mon Profil</button>
+        <button id="logoutBtn">Déconnexion</button>
+      </div>
+    </div>
   </header>
 
+  <!-- Main -->
   <main>
-    <aside class="lamp-list">
-      <h2>Toutes mes lampes</h2>
-      <ul>
-        <li>XV2OTOX12100 <span>12/05/2025</span></li>
-        <li>XG90XFC47903 <span>12/05/2025</span></li>
-        <li class="active">BI90CIP84400 <span>12/05/2025</span></li>
-      </ul>
-      <a href="#">Afficher plus</a>
-    </aside>
 
+    <!-- Dashboard -->
     <section class="dashboard">
-      <div class="card">
-        <h3>Détecter une nouvelle lampe</h3>
-        <div class="icons">
-          <span>📶</span>
-          <span>🔵</span>
-          <span>✏️</span>
-        </div>
+      <!-- Carte connexion LED -->
+      <div class="card" id="connectCard">
+        <h3>Connecter une LED</h3>
+        <button id="connectLedBtn" class="btn-connect">Connecter une LED</button>
       </div>
-      <!-- Autres cards inchangées -->
+
+      <!-- Contrôles LED (cachés au début) -->
+      <section id="ledControls" style="display:none;">
+        <div class="card controls-card">
+          <h3>Contrôles LED</h3>
+
+          <div class="btn-group">
+            <button id="toggleOnBtn" class="btn-connect">Allumer</button>
+            <button id="toggleOffBtn" class="btn-connect">Éteindre</button>
+            <button id="disconnectBtn" class="btn-disconnect">Déconnecter</button>
+          </div>
+
+          <div class="control-group">
+            <label for="brightness">Intensité</label>
+            <input type="range" id="brightness" min="0" max="255" value="128">
+          </div>
+
+          <div class="control-group">
+            <label for="colorPicker">Couleur</label>
+            <input type="color" id="colorPicker" value="#ffffff">
+          </div>
+
+          <div class="control-group">
+            <label for="effectSelect">Effet</label>
+            <select id="effectSelect"></select>
+          </div>
+
+          <div class="control-group">
+            <label for="paletteSelect">Palette</label>
+            <select id="paletteSelect"></select>
+          </div>
+        </div>
+      </section>
     </section>
   </main>
 
-  <div id="resetModal" class="modal">
+  <!-- Popup connexion LED -->
+  <div id="ledModal" class="modal">
     <div class="modal-content">
       <span class="close-btn">&times;</span>
-      <h2>Réinitialiser le mot de passe</h2>
-      <form id="resetForm">
-        <div class="form-group">
-          <label for="resetEmail">Email</label>
-          <input type="email" id="resetEmail" required>
-        </div>
-        <button type="submit" class="btn-auth">Envoyer le mail</button>
-      </form>
+      <h2>Connexion LED</h2>
+
+      <!-- Onglets -->
+      <div class="connect-tabs">
+        <button class="tab-btn active" data-tab="ip">Connexion IP (WLED)</button>
+        <button class="tab-btn" data-tab="scan">Détection locale</button>
+        <button class="tab-btn" data-tab="emulated">Émulation</button>
+      </div>
+
+      <!-- Connexion IP -->
+      <div class="tab-content active" id="tab-ip">
+        <form id="ledForm">
+          <div class="form-group">
+            <label for="ledIp">Adresse IP de la LED (ESP32)</label>
+            <input type="text" id="ledIp" placeholder="ex: 192.168.1.50" required>
+          </div>
+          <button type="submit" class="btn-connect">Se connecter</button>
+        </form>
+      </div>
+
+      <!-- Détection locale -->
+      <div class="tab-content" id="tab-scan">
+        <p>Choisissez une LED détectée :</p>
+        <ul id="detectedList" class="detected-list"></ul>
+        <p id="noDevicesMsg" class="no-devices">Aucune lampe dans le réseau local n’est détectée</p>
+        <button onclick="scanDevices()" class="btn-connect">Scanner</button>
+      </div>
+
+      <!-- Émulation -->
+      <div class="tab-content" id="tab-emulated">
+        <p>Simuler une LED pour tester le dashboard.</p>
+        <button onclick="connectEmulated()" class="btn-connect">Activer Émulation</button>
+      </div>
     </div>
   </div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="javascript/auth.js"></script>
+
+  <!-- Dashboard JS -->
+  <script src="javascript/dashboard.js"></script>
 </body>
 </html>

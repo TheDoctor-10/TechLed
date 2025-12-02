@@ -8,112 +8,195 @@ const firebaseConfig = {
   appId: "1:1016231820720:web:7453b90d3afa7ee811ea75"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 
-// --- Cookies ---
-function setCookie(name,value,days){
-  let expires = "";
-  if(days){ const d=new Date(); d.setTime(d.getTime()+days*24*60*60*1000); expires="; expires="+d.toUTCString();}
-  document.cookie = name+"="+(value||"")+expires+"; path=/";
-}
-function getCookie(name){ const m=document.cookie.match(new RegExp('(^| )'+name+'=([^;]+)')); return m?m[2]:null; }
-function eraseCookie(name){ document.cookie = name+'=; Max-Age=-99999999; path=/'; }
+// Détection de la page actuelle
+const path = window.location.pathname;
+const isDashboard = path.endsWith("dashboard.html");
+const isIndex = path.endsWith("index.html") || path === "/";
 
-// --- Gestion menu utilisateur ---
-function initUserMenu() {
-  const userContainer = document.getElementById("userContainer");
-  if(!userContainer) return;
-
-  auth.onAuthStateChanged(user => {
-    if(user){
-      setCookie("techledUser", user.email, 7);
-
-      // Création menu utilisateur
-      userContainer.innerHTML = `
-        <button id="userBtn" class="user-icon">👤</button>
-        <div id="userMenu" class="user-menu" style="display:none;flex-direction:column;position:absolute;z-index:1000;">
-          <p style="margin-bottom:5px;">Bienvenue ${user.email}</p>
-          <button id="resetPasswordBtn" class="btn-outline">Réinitialiser mot de passe</button>
-          <button id="logoutBtn" class="btn-outline">Déconnexion</button>
-          <button id="homeBtn" class="btn-outline">Accueil</button>
-        </div>`;
-
-      const userBtn = document.getElementById("userBtn");
-      const userMenu = document.getElementById("userMenu");
-
-      // Affichage du menu
-      userBtn.onclick = (e) => {
-        e.stopPropagation();
-        const rect = userBtn.getBoundingClientRect();
-        const menuHeight = userMenu.offsetHeight;
-        const menuWidth = userMenu.offsetWidth;
-
-        // Evite que le menu sorte de l’écran
-        let top = rect.bottom + 5;
-        let right = window.innerWidth - rect.right;
-
-        if(top + menuHeight > window.innerHeight) top = window.innerHeight - menuHeight - 10;
-        if(right + menuWidth > window.innerWidth) right = 10;
-
-        userMenu.style.top = top + "px";
-        userMenu.style.right = right + "px";
-
-        userMenu.style.display = userMenu.style.display === "none" ? "flex" : "none";
-      };
-
-      window.addEventListener("click",()=>{ if(userMenu) userMenu.style.display="none"; });
-
-      // Boutons menu
-      document.getElementById("resetPasswordBtn").onclick = () => {
-        const modal = document.getElementById("resetModal");
-        if(modal) modal.classList.add("active");
-      };
-      document.getElementById("logoutBtn").onclick = () => {
-        auth.signOut().then(()=>{
-          eraseCookie("techledUser");
-          window.location.href="index.html";
-        });
-      };
-      document.getElementById("homeBtn").onclick = () => { window.location.href="index.html"; };
-
+// Gestion de l'état utilisateur
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    if (isIndex) renderLoggedInUI(user);
+    if (isDashboard) renderLoggedInUI(user);
+  } else {
+    if (isDashboard) {
+      window.location.href = "index.html";
     } else {
-      // Pas connecté : bouton Connexion/Inscription sur index
-      const currentPage = window.location.pathname.split("/").pop();
-      if(currentPage === "index.html"){
-        const authBtn = document.getElementById("authBtn");
-        if(authBtn) authBtn.style.display = "inline-block";
-      } else {
-        window.location.href="index.html";
-      }
+      renderLoggedOutUI();
     }
+  }
+});
+
+// =======================
+// Fonctions UI
+// =======================
+
+function renderLoggedInUI(user) {
+  const container = document.getElementById("userContainer");
+  if (!container) return;
+
+  container.innerHTML = `
+    <button class="user-icon" id="userIcon">👤</button>
+    <div class="user-menu" id="userMenu">
+      ${isIndex ? `<button id="goDashboard">Aller au tableau de bord</button>` : ""}
+      <button id="resetPasswordBtn">Réinitialiser mot de passe</button>
+      <button id="logoutBtn">Se déconnecter</button>
+    </div>
+  `;
+
+  // Aller au dashboard
+  const goDashboardBtn = document.getElementById("goDashboard");
+  if (goDashboardBtn) {
+    goDashboardBtn.addEventListener("click", () => {
+      window.location.href = "dashboard.html";
+    });
+  }
+
+  // Réinitialiser mot de passe avec confirmation
+  const resetPasswordBtn = document.getElementById("resetPasswordBtn");
+  if (resetPasswordBtn) {
+    resetPasswordBtn.addEventListener("click", () => {
+      if (user.email) {
+        const confirmReset = confirm(
+          "Voulez-vous vraiment envoyer un email de réinitialisation à " + user.email + " ?"
+        );
+        if (confirmReset) {
+          firebase.auth().sendPasswordResetEmail(user.email)
+            .then(() => {
+              alert("Email de réinitialisation envoyé à " + user.email);
+            })
+            .catch((error) => {
+              alert("Erreur : " + error.message);
+            });
+        }
+      } else {
+        alert("Impossible de récupérer l'email de l'utilisateur.");
+      }
+    });
+  }
+
+  // Déconnexion
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      firebase.auth().signOut();
+    });
+  }
+
+  // Menu utilisateur toggle
+  const userIcon = document.getElementById("userIcon");
+  const userMenu = document.getElementById("userMenu");
+  if (userIcon && userMenu) {
+    userIcon.addEventListener("click", () => {
+      userMenu.style.display = userMenu.style.display === "flex" ? "none" : "flex";
+    });
+  }
+}
+
+function renderLoggedOutUI() {
+  const container = document.getElementById("userContainer");
+  if (!container) return;
+
+  container.innerHTML = `
+    <button id="authBtn" class="btn-outline">Connexion / Inscription</button>
+  `;
+
+  const authBtn = document.getElementById("authBtn");
+  if (authBtn) {
+    authBtn.addEventListener("click", () => {
+      const modal = document.getElementById("authModal");
+      if (modal) modal.classList.add("active");
+    });
+  }
+}
+
+// =======================
+// Fermeture des popups
+// =======================
+document.querySelectorAll(".close-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const modal = btn.closest(".modal");
+    if (modal) modal.classList.remove("active");
+  });
+});
+
+// =======================
+// Gestion du reset password (formulaire popup)
+// =======================
+const resetForm = document.getElementById("resetForm");
+if (resetForm) {
+  resetForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("resetEmail").value;
+    firebase.auth().sendPasswordResetEmail(email)
+      .then(() => {
+        alert("Email de réinitialisation envoyé !");
+      })
+      .catch((error) => {
+        alert("Erreur : " + error.message);
+      });
   });
 }
 
-// --- Modal Reset Password ---
-function initResetModal() {
-  const resetModal = document.getElementById("resetModal");
-  if(!resetModal) return;
-  const resetForm = document.getElementById("resetForm");
-  const closeBtn = resetModal.querySelector(".close-btn");
+// =======================
+// Onglets Connexion / Inscription
+// =======================
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
 
-  closeBtn.onclick = () => resetModal.classList.remove("active");
-  window.onclick = (e) => { if(e.target===resetModal) resetModal.classList.remove("active"); }
+if (loginTab && signupTab && loginForm && signupForm) {
+  loginTab.addEventListener("click", () => {
+    loginTab.classList.add("active");
+    signupTab.classList.remove("active");
+    loginForm.style.display = "block";
+    signupForm.style.display = "none";
+  });
 
-  resetForm.onsubmit = (e)=>{
-    e.preventDefault();
-    const email = document.getElementById("resetEmail").value;
-    auth.sendPasswordResetEmail(email)
-      .then(()=>{ 
-        alert("Email de réinitialisation envoyé !");
-        resetModal.classList.remove("active");
-        resetForm.reset();
-      })
-      .catch(err=>alert("Erreur : "+err.message));
-  };
+  signupTab.addEventListener("click", () => {
+    signupTab.classList.add("active");
+    loginTab.classList.remove("active");
+    signupForm.style.display = "block";
+    loginForm.style.display = "none";
+  });
 }
 
-// --- Initialisation ---
-document.addEventListener("DOMContentLoaded", ()=>{
-  initUserMenu();
-  initResetModal();
-});
+// =======================
+// Connexion
+// =======================
+if (loginForm) {
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(() => {
+        window.location.href = "dashboard.html";
+      })
+      .catch((error) => {
+        alert("Erreur de connexion : " + error.message);
+      });
+  });
+}
+
+// =======================
+// Inscription
+// =======================
+if (signupForm) {
+  signupForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        window.location.href = "dashboard.html";
+      })
+      .catch((error) => {
+        alert("Erreur d'inscription : " + error.message);
+      });
+  });
+}
