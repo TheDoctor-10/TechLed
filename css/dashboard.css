@@ -1,0 +1,16 @@
+body { margin: 0; font-family: 'Ubuntu', sans-serif; background-color: #f4fdf7; }
+main { display: flex; flex-wrap: wrap; padding: 1rem; gap: 1rem; }
+.lamp-list { flex: 1 1 250px; background: #eafaf1; padding: 1rem; border-radius: 8px; }
+.lamp-list ul { list-style: none; }
+.lamp-list li { 
+  padding: 0.8rem; background: white; margin-bottom: 0.5rem; 
+  border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between;
+  transition: 0.2s;
+}
+.lamp-list li:hover { background: #d4f5e0; }
+.dashboard { flex: 3 1 500px; }
+.card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.presets { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.presets button { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #eee; cursor: pointer; }
+
+@media (max-width: 768px) { main { flex-direction: column; } }

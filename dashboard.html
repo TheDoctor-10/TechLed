@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechLED - Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <header>
+    <div class="logo">TechLED</div>
+    <div id="userContainer"></div>
+
+<div id="resetModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Réinitialiser</h2>
+        <form id="resetForm">
+            <div class="form-group">
+                <label>Nouvel Email ou Reset Password</label>
+                <input type="email" id="resetEmail" required>
+            </div>
+            <button type="submit" class="btn-auth">Envoyer l'email de reset</button>
+        </form>
+    </div>
+</div>
+  </header>
+
+  <main>
+    <aside class="lamp-list">
+      <h2>Mes Lampes</h2>
+      <div style="padding:15px; background:white; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;">
+        <button id="scanBtn" class="btn-auth" style="font-size:14px; margin-bottom:10px;">🔍 Scan auto WiFi</button>
+        <div id="scanStatus" style="font-size:12px; color:#2ecc71; display:none; text-align:center; margin-bottom:10px;">Scan en cours...</div>
+        
+        <input type="text" id="manualIp" placeholder="Ex: 192.168.1.50" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:5px;">
+        <button onclick="validateAndAddIp()" class="btn-secondary" style="width:100%; margin-top:5px; font-size:12px;">Vérifier & Ajouter</button>
+      </div>
+      <ul id="lampUl"></ul>
+    </aside>
+
+    <section class="dashboard">
+      <div class="card">
+        <h3 id="currentLampName" style="color:#2ecc71;">Sélectionnez une lampe</h3>
+        <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+        
+        <div id="wledControls" style="display:none; flex-direction:column; gap:20px;">
+          <button class="btn-primary" onclick="sendWledHttp('T=2')">ALLUMER / ÉTEINDRE</button>
+          
+          <div>
+            <label>Luminosité</label>
+            <input type="range" min="0" max="255" class="slider" onchange="sendWledHttp('A=' + this.value)">
+          </div>
+
+          <div class="presets">
+            <label>Couleurs</label>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+              <button onclick="sendWledHttp('CL=hFF0000')" style="background:red; width:40px; height:40px; border-radius:50%; border:none;"></button>
+              <button onclick="sendWledHttp('CL=h00FF00')" style="background:green; width:40px; height:40px; border-radius:50%; border:none;"></button>
+              <button onclick="sendWledHttp('CL=h0000FF')" style="background:blue; width:40px; height:40px; border-radius:50%; border:none;"></button>
+              <input type="color" onchange="sendWledHttp('CL=h' + this.value.substring(1))" style="width:40px; height:40px; border:none; cursor:pointer;">
+            </div>
+          </div>
+
+          <div>
+            <label>Mode / Effet</label>
+            <select onchange="sendWledHttp('FX=' + this.value)" style="width:100%; padding:10px; border-radius:5px; border:1px solid #ddd; margin-top:5px;">
+              <option value="0">Statique</option>
+              <option value="1">Clignotement</option>
+              <option value="9">Arc-en-ciel</option>
+              <option value="42">Feux d'artifice</option>
+            </select>
+          </div>
+        </div>
+        <p id="placeholderMsg" style="text-align:center; color:#999;">Utilisez le scan ou l'ajout manuel pour commencer.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="javascript/auth.js"></script>
+</body>
+</html>
