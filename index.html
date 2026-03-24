@@ -14,6 +14,65 @@
       <button id="authBtn" class="btn-outline">Connexion / Inscription</button>
     </nav>
   </header>
+ 
+<div id="resetModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Paramètres du compte</h2>
+
+    <div class="form-group">
+      <label>Action :</label>
+      <select id="resetType" onchange="toggleResetFields()" style="width:100%; padding:10px; margin: 10px 0; border-radius:5px;">
+        <option value="password">Réinitialiser le mot de passe</option>
+        <option value="email">Changer mon adresse e-mail</option>
+      </select>
+    </div>
+
+    <form id="resetForm">
+
+      <!-- Réinitialisation du mot de passe -->
+      <div id="passwordFields">
+        <label>Email actuel :</label>
+        <input type="email" id="resetEmailInput"
+               placeholder="Entrez l'adresse e-mail de votre compte"
+               style="width:100%; padding:8px; margin-bottom:5px;">
+        <small style="color:#777;">Un lien de réinitialisation sera envoyé.</small>
+      </div>
+
+      <!-- Changement d'email -->
+      <div id="emailFields" style="display:none;">
+        <label>Ancienne adresse e-mail :</label>
+        <input type="email" id="oldEmailInput"
+               placeholder="Votre adresse e-mail actuelle"
+               style="width:100%; padding:8px; margin-bottom:5px;">
+        <small style="color:#777;">Adresse utilisée pour vous connecter.</small>
+
+        <br><br>
+
+        <label>Nouvelle adresse e-mail :</label>
+        <input type="email" id="newEmailInput"
+               placeholder="Votre nouvelle adresse e-mail"
+               style="width:100%; padding:8px; margin-bottom:5px;">
+        <small style="color:#777;">Un lien de confirmation sera envoyé.</small>
+
+        <br><br>
+
+        <label>Mot de passe actuel :</label>
+        <input type="password" id="passwordInput"
+               placeholder="Votre mot de passe"
+               style="width:100%; padding:8px; margin-bottom:5px;">
+        <small style="color:#777;">Requis pour vérifier votre identité.</small>
+      </div>
+
+      <div id="resetStatus"
+           style="display:none; font-size:14px; margin:10px 0; font-weight:bold; text-align:center;">
+      </div>
+
+      <button type="submit" class="btn-auth">Confirmer</button>
+    </form>
+  </div>
+</div>
+
 
   <main>
     <section class="hero">

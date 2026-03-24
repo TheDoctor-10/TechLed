@@ -13,19 +13,59 @@
     <div id="userContainer"></div>
 
 <div id="resetModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>Réinitialiser</h2>
-        <form id="resetForm">
-            <div class="form-group">
-                <label>Nouvel Email ou Reset Password</label>
-                <input type="email" id="resetEmail" required>
-            </div>
-            <button type="submit" class="btn-auth">Envoyer l'email de reset</button>
-        </form>
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Paramètres du compte</h2>
+
+    <div class="form-group">
+      <label>Action :</label>
+      <select id="resetType" onchange="toggleResetFields()" style="width:100%; padding:10px; margin: 10px 0; border-radius:5px;">
+        <option value="password">Réinitialiser le mot de passe</option>
+        <option value="email">Changer mon adresse e-mail</option>
+      </select>
     </div>
+
+<form id="resetForm">
+
+  <!-- Réinitialisation du mot de passe -->
+  <div id="passwordFields">
+    <label>Email actuel :</label>
+    <input type="email" id="resetEmailInput"
+           placeholder="Entrez l'adresse e-mail de votre compte"
+           style="width:100%; padding:8px; margin-bottom:5px;">
+    <small style="color:#777;">Un lien de réinitialisation sera envoyé à cette adresse.</small>
+  </div>
+
+  <!-- Changement d'email -->
+  <div id="emailFields" style="display:none;">
+
+    <label>Ancienne adresse e-mail :</label>
+    <input type="email" id="oldEmailInput"
+           placeholder="Votre adresse e-mail actuelle"
+           style="width:100%; padding:8px; margin-bottom:5px;">
+    <small style="color:#777;">C’est l’adresse que vous utilisez actuellement pour vous connecter.</small>
+
+    <label>Nouvelle adresse e-mail :</label>
+    <input type="email" id="newEmailInput"
+           placeholder="Votre nouvelle adresse e-mail"
+           style="width:100%; padding:8px; margin-bottom:5px;">
+    <small style="color:#777;">Un lien de confirmation sera envoyé sur cette nouvelle adresse.</small>
+
+    <label>Mot de passe actuel :</label>
+    <input type="password" id="passwordInput"
+           placeholder="Votre mot de passe"
+           style="width:100%; padding:8px; margin-bottom:5px;">
+    <small style="color:#777;">Requis pour vérifier votre identité (sécurité Firebase).</small>
+  </div>
+
+  <div id="resetStatus"
+       style="display:none; font-size:14px; margin:10px 0; font-weight:bold; text-align:center;">
+  </div>
+  
+  <button type="submit" class="btn-auth">Confirmer</button>
+</form>
 </div>
-  </header>
+</header>
 
   <main>
     <aside class="lamp-list">
@@ -55,11 +95,47 @@
 
           <div class="presets">
             <label>Couleurs</label>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-              <button onclick="sendWledHttp('CL=hFF0000')" style="background:red; width:40px; height:40px; border-radius:50%; border:none;"></button>
-              <button onclick="sendWledHttp('CL=h00FF00')" style="background:green; width:40px; height:40px; border-radius:50%; border:none;"></button>
-              <button onclick="sendWledHttp('CL=h0000FF')" style="background:blue; width:40px; height:40px; border-radius:50%; border:none;"></button>
-              <input type="color" onchange="sendWledHttp('CL=h' + this.value.substring(1))" style="width:40px; height:40px; border:none; cursor:pointer;">
+
+            <!-- 🎨 COLOR PICKER PRO -->
+            <div style="margin-top:10px;">
+
+              <!-- HUE BAR -->
+              <div id="hueArea" style="position:relative; width:250px; height:20px;">
+                <canvas id="hueCanvas" width="250" height="20"></canvas>
+                <div id="hueCursor" style="
+                  position:absolute;
+                  width:14px;
+                  height:14px;
+                  border:2px solid white;
+                  border-radius:50%;
+                  box-shadow:0 0 3px black;
+                  pointer-events:none;
+                  top:3px;
+                  left:0;
+                "></div>
+              </div>
+
+              <!-- SV BOX -->
+              <div id="svArea" style="position:relative; width:250px; height:150px; margin-top:10px;">
+                <canvas id="svCanvas" width="250" height="150"></canvas>
+                <div id="svCursor" style="
+                  position:absolute;
+                  width:14px;
+                  height:14px;
+                  border:2px solid white;
+                  border-radius:50%;
+                  box-shadow:0 0 3px black;
+                  pointer-events:none;
+                  display:none;
+                "></div>
+              </div>
+
+              <!-- FAVORIS -->
+              <div style="margin-top:10px;">
+                <div id="favoriteColors" style="display:flex; gap:5px; flex-wrap:wrap;"></div>
+                <button id="saveColorBtn" class="btn-secondary" style="font-size:12px; margin-top:5px;">Ajouter aux favoris</button>
+              </div>
+
             </div>
           </div>
 
@@ -73,10 +149,13 @@
             </select>
           </div>
         </div>
+
         <p id="placeholderMsg" style="text-align:center; color:#999;">Utilisez le scan ou l'ajout manuel pour commencer.</p>
       </div>
     </section>
   </main>
+
+  <button id="debugBtn" style="position:fixed; bottom:10px; left:10px; z-index:999;">DEBUG</button>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
