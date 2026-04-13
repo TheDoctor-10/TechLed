@@ -12,151 +12,109 @@
     <div class="logo">TechLED</div>
     <div id="userContainer"></div>
 
-<div id="resetModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <h2>Paramètres du compte</h2>
+    <div id="resetModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Paramètres du compte</h2>
 
-    <div class="form-group">
-      <label>Action :</label>
-      <select id="resetType" onchange="toggleResetFields()" style="width:100%; padding:10px; margin: 10px 0; border-radius:5px;">
-        <option value="password">Réinitialiser le mot de passe</option>
-        <option value="email">Changer mon adresse e-mail</option>
-      </select>
+        <div class="form-group">
+          <label>Action :</label>
+          <select id="resetType" onchange="toggleResetFields()">
+            <option value="password">Réinitialiser le mot de passe</option>
+            <option value="email">Changer mon adresse e-mail</option>
+          </select>
+        </div>
+
+        <form id="resetForm">
+          <div id="passwordFields">
+            <label>Email actuel :</label>
+            <input type="email" id="resetEmailInput" placeholder="Entrez l'adresse e-mail de votre compte">
+            <small>Un lien de réinitialisation sera envoyé à cette adresse.</small>
+          </div>
+
+          <div id="emailFields" style="display:none;">
+            <label>Ancienne adresse e-mail :</label>
+            <input type="email" id="oldEmailInput" placeholder="Votre adresse e-mail actuelle">
+            <small>C’est l’adresse que vous utilisez actuellement pour vous connecter.</small>
+
+            <label>Nouvelle adresse e-mail :</label>
+            <input type="email" id="newEmailInput" placeholder="Votre nouvelle adresse e-mail">
+            <small>Un lien de confirmation sera envoyé sur cette nouvelle adresse.</small>
+
+            <label>Mot de passe actuel :</label>
+            <input type="password" id="passwordInput" placeholder="Votre mot de passe">
+            <small>Requis pour vérifier votre identité (sécurité Firebase).</small>
+          </div>
+
+          <div id="resetStatus"></div>
+          <button type="submit" class="btn-auth">Confirmer</button>
+        </form>
+      </div>
     </div>
-
-<form id="resetForm">
-
-  <!-- Réinitialisation du mot de passe -->
-  <div id="passwordFields">
-    <label>Email actuel :</label>
-    <input type="email" id="resetEmailInput"
-           placeholder="Entrez l'adresse e-mail de votre compte"
-           style="width:100%; padding:8px; margin-bottom:5px;">
-    <small style="color:#777;">Un lien de réinitialisation sera envoyé à cette adresse.</small>
-  </div>
-
-  <!-- Changement d'email -->
-  <div id="emailFields" style="display:none;">
-
-    <label>Ancienne adresse e-mail :</label>
-    <input type="email" id="oldEmailInput"
-           placeholder="Votre adresse e-mail actuelle"
-           style="width:100%; padding:8px; margin-bottom:5px;">
-    <small style="color:#777;">C’est l’adresse que vous utilisez actuellement pour vous connecter.</small>
-
-    <label>Nouvelle adresse e-mail :</label>
-    <input type="email" id="newEmailInput"
-           placeholder="Votre nouvelle adresse e-mail"
-           style="width:100%; padding:8px; margin-bottom:5px;">
-    <small style="color:#777;">Un lien de confirmation sera envoyé sur cette nouvelle adresse.</small>
-
-    <label>Mot de passe actuel :</label>
-    <input type="password" id="passwordInput"
-           placeholder="Votre mot de passe"
-           style="width:100%; padding:8px; margin-bottom:5px;">
-    <small style="color:#777;">Requis pour vérifier votre identité (sécurité Firebase).</small>
-  </div>
-
-  <div id="resetStatus"
-       style="display:none; font-size:14px; margin:10px 0; font-weight:bold; text-align:center;">
-  </div>
-  
-  <button type="submit" class="btn-auth">Confirmer</button>
-</form>
-</div>
-</header>
+  </header>
 
   <main>
     <aside class="lamp-list">
       <h2>Mes Lampes</h2>
-      <div style="padding:15px; background:white; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;">
-        <button id="scanBtn" class="btn-auth" style="font-size:14px; margin-bottom:10px;">🔍 Scan auto WiFi</button>
-        <div id="scanStatus" style="font-size:12px; color:#2ecc71; display:none; text-align:center; margin-bottom:10px;">Scan en cours...</div>
+      <div class="scan-container">
+        <button id="scanBtn" class="btn-auth">🔍 Scan auto WiFi</button>
+        <div id="scanStatus">Scan en cours...</div>
         
-        <input type="text" id="manualIp" placeholder="Ex: 192.168.1.50" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:5px;">
-        <button onclick="validateAndAddIp()" class="btn-secondary" style="width:100%; margin-top:5px; font-size:12px;">Vérifier & Ajouter</button>
+        <input type="text" id="manualIp" placeholder="Ex: 192.168.1.50">
+        <button onclick="validateAndAddIp()" class="btn-secondary">Vérifier & Ajouter</button>
       </div>
       <ul id="lampUl"></ul>
     </aside>
 
     <section class="dashboard">
       <div class="card">
-        <h3 id="currentLampName" style="color:#2ecc71;">Sélectionnez une lampe</h3>
-        <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+        <h3 id="currentLampName">Sélectionnez une lampe</h3>
+        <hr>
         
-        <div id="wledControls" style="display:none; flex-direction:column; gap:20px;">
+        <div id="wledControls">
           <button class="btn-primary" onclick="sendWledHttp('T=2')">ALLUMER / ÉTEINDRE</button>
           
-          <div>
+          <div class="control-group">
             <label>Luminosité</label>
             <input type="range" min="0" max="255" class="slider" onchange="sendWledHttp('A=' + this.value)">
           </div>
 
           <div class="presets">
             <label>Couleurs</label>
-
-            <!-- 🎨 COLOR PICKER PRO -->
-            <div style="margin-top:10px;">
-
-              <!-- HUE BAR -->
-              <div id="hueArea" style="position:relative; width:250px; height:20px;">
+            <div class="picker-container">
+              <div id="hueArea">
                 <canvas id="hueCanvas" width="250" height="20"></canvas>
-                <div id="hueCursor" style="
-                  position:absolute;
-                  width:14px;
-                  height:14px;
-                  border:2px solid white;
-                  border-radius:50%;
-                  box-shadow:0 0 3px black;
-                  pointer-events:none;
-                  top:3px;
-                  left:0;
-                "></div>
+                <div id="hueCursor" class="cursor"></div>
               </div>
 
-              <!-- SV BOX -->
-              <div id="svArea" style="position:relative; width:250px; height:150px; margin-top:10px;">
+              <div id="svArea">
                 <canvas id="svCanvas" width="250" height="150"></canvas>
-                <div id="svCursor" style="
-                  position:absolute;
-                  width:14px;
-                  height:14px;
-                  border:2px solid white;
-                  border-radius:50%;
-                  box-shadow:0 0 3px black;
-                  pointer-events:none;
-                  display:none;
-                "></div>
+                <div id="svCursor" class="cursor"></div>
               </div>
             </div>
           </div>
-      <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
-        <div style="flex: 1;">
-          <label style="font-size: 12px; color: #666;">Code Hex (ex: #FF5733)</label>
-          <input type="text" id="hexInput" placeholder="#FFFFFF" 
-                 style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace;">
-        </div>
-        <button id="applyHexBtn" class="btn-secondary" style="margin-top: 18px; padding: 8px 15px;">Appliquer</button>
-      </div>
 
-          <div>
+          <div class="hex-group">
+            <div class="hex-field">
+              <label>Code Hex (ex: #FF5733)</label>
+              <input type="text" id="hexInput" placeholder="#FFFFFF">
+            </div>
+            <button id="applyHexBtn" class="btn-secondary">Appliquer</button>
+          </div>
+
+          <div class="control-group">
             <label>Mode / Effet</label>
-            <select onchange="sendWledHttp('FX=' + this.value)" style="width:100%; padding:10px; border-radius:5px; border:1px solid #ddd; margin-top:5px;">
-              <option value="0">Statique</option>
-              <option value="1">Clignotement</option>
-              <option value="9">Arc-en-ciel</option>
-              <option value="42">Feux d'artifice</option>
+            <select id="wledEffects" onchange="sendWledHttp('FX=' + this.value)">
+              <option value="0">Chargement des effets...</option>
             </select>
           </div>
-        </div>
 
-        <p id="placeholderMsg" style="text-align:center; color:#999;">Utilisez le scan ou l'ajout manuel pour commencer.</p>
+        <p id="placeholderMsg">Utilisez le scan ou l'ajout manuel pour commencer.</p>
       </div>
     </section>
   </main>
 
-  <button id="debugBtn" style="position:fixed; bottom:10px; left:10px; z-index:999;">DEBUG</button>
+  <button id="debugBtn">DEBUG</button>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
