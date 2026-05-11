@@ -17,16 +17,10 @@ header {
   justify-content:space-between; 
   align-items:center; 
 }
-.logo { font-size:1.5rem; font-weight:bold; }
-nav .btn-outline, .user-icon { 
-  background:white; 
-  color:#2ecc71; 
-  border:none; 
-  padding:0.5rem 1rem; 
-  border-radius:5px; 
-  cursor:pointer; 
-  font-family:'Ubuntu',sans-serif; 
-  font-size:16px;
+.logo {
+  width:100px;
+  height: auto;
+  display:inline-block;
 }
 
 /* Icône utilisateur ronde */

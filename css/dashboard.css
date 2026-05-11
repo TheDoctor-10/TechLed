@@ -1,7 +1,6 @@
 /* Base & Layout */
 body { margin: 0; font-family: 'Ubuntu', sans-serif; background-color: #f4fdf7; }
 main { display: flex; flex-wrap: wrap; padding: 1rem; gap: 1rem; }
-header { background: #fff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
 .logo { font-weight: bold; font-size: 1.5rem; color: #2ecc71; }
 
 /* Aside & Lamp List */
