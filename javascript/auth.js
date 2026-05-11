@@ -52,7 +52,7 @@ const WLED_EFFECTS = {
 };
 
 // -----------------------------------------------------
-// 1. GESTION UTILISATEUR & AUTHENTIFICATION
+// 1. GESTION UTILISATEUR
 // -----------------------------------------------------
 auth.onAuthStateChanged((user) => {
     const container = document.getElementById("userContainer");
@@ -80,80 +80,48 @@ auth.onAuthStateChanged((user) => {
         };
 
         document.getElementById("logoutBtn").onclick = () => auth.signOut();
-    } else {
-        if (isDashboard) {
-            window.location.href = "index.html";
-        } else {
-            container.innerHTML = `<button id="authBtn" class="btn-outline">Connexion / Inscription</button>`;
-            if (document.getElementById("authBtn")) {
-                document.getElementById("authBtn").onclick = () => document.getElementById("authModal").classList.add("active");
-            }
-        }
+    } else if (isDashboard) {
+        window.location.href = "index.html";
     }
 });
 
 // -----------------------------------------------------
-// 2. LOGIQUE WLED (SCAN, MANUEL, EFFETS)
+// 2. LOGIQUE WLED (HTTP UNIQUEMENT)
 // -----------------------------------------------------
+
+function sendWledHttp(params) {
+    if (debugMode) {
+        console.log("%c[DEBUG] HTTP Send -> " + params, "color: cyan; background: #222;");
+        if (currentLampIp === "DEBUG_ACTIVE") return;
+    }
+    if (!currentLampIp) return;
+
+    fetch(`http://${currentLampIp}/win&${params}`, { mode: "no-cors" })
+        .catch(() => {
+            if (debugMode) {
+                console.log(`%c[DEBUG] ❌ Erreur envoi vers ${currentLampIp}`, "color: #e74c3c;");
+            }
+        });
+}
+
 function populateEffects() {
-    const select = document.querySelector("select[onchange*='FX=']");
+    const select = document.getElementById("wledEffects");
     if (!select) return;
-    select.innerHTML = "";
+
+    select.innerHTML = '<option value="">Choisir un effet...</option>';
+
     Object.entries(WLED_EFFECTS).forEach(([id, name]) => {
         const opt = document.createElement("option");
         opt.value = id;
         opt.textContent = name;
         select.appendChild(opt);
     });
-}
 
-async function validateAndAddIp() {
-    const ip = document.getElementById("manualIp").value.trim();
-    if (!ip) return alert("Veuillez entrer une IP.");
-    const status = document.getElementById("scanStatus");
-    status.style.display = "block";
-    status.innerText = "Vérification de l'adresse...";
-    
-    const isValid = await validateWled(ip);
-    if (isValid) {
-        status.innerText = "Lampe ajoutée !";
-        document.getElementById("manualIp").value = "";
-    } else {
-        alert("WLED introuvable à cette adresse.");
-        status.style.display = "none";
-    }
-}
-
-async function startNetworkScan() {
-    const status = document.getElementById("scanStatus");
-    status.style.display = "block";
-    status.innerText = "Scan du réseau WiFi...";
-    
-    // Scan élargi
-    const subnets = ["192.168.1", "192.168.0", "10.0.0", "192.168.4"];
-    let promises = [];
-    subnets.forEach(s => {
-        for(let i=1; i<60; i++) promises.push(validateWled(`${s}.${i}`));
-    });
-
-    const results = await Promise.all(promises);
-    const count = results.filter(r => r === true).length;
-    status.innerText = count > 0 ? `${count} WLED détectée(s)` : "Aucune WLED trouvée.";
-    setTimeout(() => status.style.display = "none", 5000);
-}
-
-async function validateWled(ip) {
-    const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), 1500);
-    try {
-        const res = await fetch(`http://${ip}/json/info`, { signal: ctrl.signal });
-        const data = await res.json();
-        if (data.brand === "WLED" || (data.name && data.name.toUpperCase().includes("WLED"))) {
-            addLampToList(data.name || "WLED", ip);
-            return true;
+    select.onchange = () => {
+        if (select.value !== "") {
+            sendWledHttp("FX=" + select.value);
         }
-        return false;
-    } catch(e) { return false; } finally { clearTimeout(tid); }
+    };
 }
 
 function addLampToList(name, ip) {
@@ -167,26 +135,32 @@ function addLampToList(name, ip) {
 function renderLampList() {
     const ul = document.getElementById("lampUl");
     if (!ul) return;
+
     ul.innerHTML = "";
+
     savedLamps.forEach(lamp => {
         const li = document.createElement("li");
         li.innerHTML = `<span>${lamp.name}</span> <small>${lamp.ip}</small>`;
+
         li.onclick = () => {
             currentLampIp = lamp.ip;
+
+            if (debugMode) {
+                console.log(`%c[DEBUG] Sélection : ${lamp.name} (${lamp.ip})`, "color: yellow;");
+            }
+
             document.getElementById("currentLampName").innerText = lamp.name;
             document.getElementById("wledControls").style.display = "flex";
             document.getElementById("placeholderMsg").style.display = "none";
-            document.querySelectorAll('.lamp-list li').forEach(el => el.classList.remove('active'));
+
+            document.querySelectorAll('.lamp-list li')
+                .forEach(el => el.classList.remove('active'));
+
             li.classList.add('active');
         };
+
         ul.appendChild(li);
     });
-}
-
-function sendWledHttp(params) {
-    if (debugMode) return console.log("[DEBUG] -> " + params);
-    if (!currentLampIp) return;
-    fetch(`http://${currentLampIp}/win&${params}`, { mode: "no-cors" }).catch(() => {});
 }
 
 // -----------------------------------------------------
@@ -196,116 +170,81 @@ function hslToRgb(h, s, v) {
     s /= 100; v /= 100;
     let c = v * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c;
     let r=0, g=0, b=0;
-    if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}
-    return { r:Math.round((r+m)*255), g:Math.round((g+m)*255), b:Math.round((b+m)*255) };
+
+    if(h<60){r=c;g=x}
+    else if(h<120){r=x;g=c}
+    else if(h<180){g=c;b=x}
+    else if(h<240){g=x;b=c}
+    else if(h<300){r=x;b=c}
+    else{r=c;b=x}
+
+    return {
+        r:Math.round((r+m)*255),
+        g:Math.round((g+m)*255),
+        b:Math.round((b+m)*255)
+    };
 }
 
 function updateWledColor() {
     const rgb = hslToRgb(hue, sat, val);
-    const hex = [rgb.r, rgb.g, rgb.b].map(x => x.toString(16).padStart(2, "0")).join("");
-    if(document.getElementById("hexInput")) document.getElementById("hexInput").value = "#" + hex.toUpperCase();
+    const hex = [rgb.r, rgb.g, rgb.b]
+        .map(x => x.toString(16).padStart(2, "0"))
+        .join("");
+
+    const hexInput = document.getElementById("hexInput");
+    if(hexInput) hexInput.value = "#" + hex.toUpperCase();
+
     sendWledHttp("CL=h" + hex);
 }
 
-function drawHueBar() {
-    const c = document.getElementById("hueCanvas"); if(!c) return;
-    const ctx = c.getContext("2d");
-    const g = ctx.createLinearGradient(0,0,c.width,0);
-    for(let i=0; i<=360; i+=60) g.addColorStop(i/360, `hsl(${i},100%,50%)`);
-    ctx.fillStyle = g; ctx.fillRect(0,0,c.width,c.height);
-}
-
-function drawSVBox() {
-    const c = document.getElementById("svCanvas"); if(!c) return;
-    const ctx = c.getContext("2d");
-    ctx.fillStyle = `hsl(${hue}, 100%, 50%)`; ctx.fillRect(0,0,c.width,c.height);
-    const w = ctx.createLinearGradient(0,0,c.width,0); w.addColorStop(0,"white"); w.addColorStop(1,"transparent");
-    ctx.fillStyle = w; ctx.fillRect(0,0,c.width,c.height);
-    const b = ctx.createLinearGradient(0,0,0,c.height); b.addColorStop(0,"transparent"); b.addColorStop(1,"black");
-    ctx.fillStyle = b; ctx.fillRect(0,0,c.width,c.height);
-}
-
-function initPickers() {
-    const hC = document.getElementById("hueCanvas"), svC = document.getElementById("svCanvas");
-    if(!hC || !svC) return;
-    let dH = false, dSV = false;
-    const upH = (e) => {
-        let rect = hC.getBoundingClientRect();
-        let x = Math.max(0, Math.min(hC.width, e.clientX - rect.left));
-        hue = Math.round((x/hC.width)*360);
-        document.getElementById("hueCursor").style.left = (x-7)+"px";
-        drawSVBox(); updateWledColor();
-    };
-    const upSV = (e) => {
-        let rect = svC.getBoundingClientRect();
-        let x = Math.max(0, Math.min(svC.width, e.clientX - rect.left));
-        let y = Math.max(0, Math.min(svC.height, e.clientY - rect.top));
-        sat = Math.round((x/svC.width)*100); val = Math.round(100 - (y/svC.height)*100);
-        const cur = document.getElementById("svCursor");
-        cur.style.left = (x-7)+"px"; cur.style.top = (y-7)+"px"; cur.style.display="block";
-        updateWledColor();
-    };
-    hC.onmousedown = (e) => { dH=true; upH(e) };
-    svC.onmousedown = (e) => { dSV=true; upSV(e) };
-    window.onmousemove = (e) => { if(dH) upH(e); if(dSV) upSV(e); };
-    window.onmouseup = () => { dH=false; dSV=false; };
-}
-
 // -----------------------------------------------------
-// 4. INITIALISATION GENERALE & FORMULAIRES
+// 4. INITIALISATION
 // -----------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-    // Tabs Auth
-    const lTab = document.getElementById("loginTab"), sTab = document.getElementById("signupTab");
-    const lForm = document.getElementById("loginForm"), sForm = document.getElementById("signupForm");
-    if (lTab) {
-        lTab.onclick = () => { lTab.classList.add("active"); sTab.classList.remove("active"); lForm.style.display="block"; sForm.style.display="none"; };
-        sTab.onclick = () => { sTab.classList.add("active"); lTab.classList.remove("active"); sForm.style.display="block"; lForm.style.display="none"; };
-        
-        lForm.onsubmit = (e) => { 
-            e.preventDefault(); 
-            auth.signInWithEmailAndPassword(document.getElementById("loginEmail").value, document.getElementById("loginPassword").value)
-                .then(()=>window.location.href="dashboard.html").catch(a=>alert(a.message)); 
-        };
-        sForm.onsubmit = (e) => { 
-            e.preventDefault(); 
-            auth.createUserWithEmailAndPassword(document.getElementById("signupEmail").value, document.getElementById("signupPassword").value)
-                .then(()=>window.location.href="dashboard.html").catch(a=>alert(a.message)); 
-        };
-    }
 
-    // Submit Reset Password
-    const resetForm = document.getElementById("resetForm");
-    if (resetForm) {
-        resetForm.onsubmit = (e) => {
-            e.preventDefault();
-            const email = document.getElementById("resetEmailInput")?.value || document.getElementById("resetEmail")?.value;
-            auth.sendPasswordResetEmail(email)
-                .then(() => alert("Email de réinitialisation envoyé !"))
-                .catch(err => alert(err.message));
-        };
-    }
-
-    // Init Dashboard
     if (isDashboard) {
+
         populateEffects();
         renderLampList();
-        drawHueBar();
-        drawSVBox();
-        initPickers();
-        if(document.getElementById("scanBtn")) document.getElementById("scanBtn").onclick = startNetworkScan;
-        
+
+        const dbBtn = document.getElementById("debugBtn");
+
+        if(dbBtn) {
+            dbBtn.onclick = () => {
+                debugMode = !debugMode;
+
+                dbBtn.style.background = debugMode ? "#2ecc71" : "";
+
+                console.log(
+                    `%c[SYSTEM] Debug : ${debugMode ? "ON" : "OFF"}`,
+                    "font-weight:bold;color:" + (debugMode ? "#2ecc71" : "#e74c3c")
+                );
+
+                if(debugMode) {
+                    currentLampIp = "DEBUG_ACTIVE";
+                    document.getElementById("wledControls").style.display = "flex";
+                    document.getElementById("placeholderMsg").style.display = "none";
+                } else {
+                    currentLampIp = "";
+                    document.getElementById("wledControls").style.display = "none";
+                    document.getElementById("placeholderMsg").style.display = "block";
+                }
+            };
+        }
+
         const applyHexBtn = document.getElementById("applyHexBtn");
         if(applyHexBtn) {
             applyHexBtn.onclick = () => {
-                let hex = document.getElementById("hexInput").value.trim().replace("#", "");
-                if (/^[0-9A-F]{6}$/i.test(hex)) sendWledHttp("CL=h" + hex);
-                else alert("Code hex invalide.");
+                let hexValue = document.getElementById("hexInput").value.trim().replace("#", "");
+                if (/^[0-9A-F]{6}$/i.test(hexValue)) {
+                    sendWledHttp("CL=h" + hexValue);
+                } else {
+                    alert("Hex invalide");
+                }
             };
         }
     }
 
-    // Fermeture modales
     document.querySelectorAll(".close-btn").forEach(btn => {
         btn.onclick = () => btn.closest(".modal").classList.remove("active");
     });

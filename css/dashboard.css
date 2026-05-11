@@ -5,7 +5,6 @@ main { display: flex; flex-wrap: wrap; padding: 1rem; gap: 1rem; }
 
 /* Aside & Lamp List */
 .lamp-list { flex: 1 1 250px; background: #eafaf1; padding: 1rem; border-radius: 8px; }
-.scan-container { padding: 15px; background: white; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; }
 .lamp-list ul { list-style: none; padding: 0; }
 .lamp-list li { 
   padding: 0.8rem; background: white; margin-bottom: 0.5rem; 
