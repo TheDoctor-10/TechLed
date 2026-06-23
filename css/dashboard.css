@@ -1,0 +1,198 @@
+/* Base & Layout */
+body { margin: 0; font-family: 'Ubuntu', sans-serif; background-color: #f4fdf7; }
+main { display: flex; flex-wrap: wrap; padding: 1rem; gap: 1rem; }
+.logo { font-weight: bold; font-size: 1.5rem; color: #2ecc71; }
+
+/* Aside & Lamp List */
+.lamp-list { flex: 1 1 250px; background: #eafaf1; padding: 1rem; border-radius: 8px; }
+.lamp-list ul { list-style: none; padding: 0; }
+.lamp-list li { 
+  padding: 0.8rem; background: white; margin-bottom: 0.5rem; 
+  border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between;
+  transition: 0.2s;
+}
+.lamp-list li:hover { background: #d4f5e0; }
+.lamp-list li.active { background: #2ecc71; color: white; }
+.add-lamp { margin-bottom: 1rem; }
+.add-lamp input { margin-bottom: 0.5rem; }
+#addLampStatus { font-size: 12px; margin: 0.4rem 0 0; min-height: 1em; }
+
+/* Dashboard Card */
+.dashboard { flex: 3 1 500px; }
+.card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.card h3 { color: #2ecc71; margin-top: 0; }
+hr { margin: 20px 0; border: 0; border-top: 1px solid #eee; }
+
+/* WLED Controls */
+#wledControls { display: none; flex-direction: column; gap: 20px; }
+.control-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; font-weight: 500; }
+input[type="text"], input[type="email"], input[type="password"], input[type="time"], input[type="number"], select {
+  width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;
+  box-sizing: border-box; font-family: 'Ubuntu', sans-serif; font-size: 0.95rem; outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus,
+input[type="time"]:focus, input[type="number"]:focus, select:focus {
+  border-color: #2ecc71; box-shadow: 0 0 0 3px rgba(46,204,113,0.15);
+}
+/* Menu déroulant (effets, action…) : flèche personnalisée, texte tronqué proprement */
+select {
+  -webkit-appearance: none; appearance: none;
+  padding-right: 34px;
+  text-overflow: ellipsis;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%232ecc71' d='M6 8 0 0h12z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+}
+/* Slider de luminosité */
+.slider-row { display: flex; align-items: center; gap: 10px; }
+.slider-ico { font-size: 1rem; flex-shrink: 0; opacity: 0.8; }
+.value-badge {
+  float: right; background: #eafaf1; color: #1e8e54;
+  font-size: 0.78rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px;
+}
+.slider {
+  -webkit-appearance: none; appearance: none;
+  flex: 1; height: 8px; border-radius: 6px; cursor: pointer; outline: none;
+  background: #e3e8e5;   /* remplacé dynamiquement (fill vert) côté JS pour Webkit */
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; border: 3px solid #2ecc71;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3); cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.slider::-webkit-slider-thumb:hover { transform: scale(1.12); }
+.slider::-moz-range-thumb {
+  width: 20px; height: 20px; border: 3px solid #2ecc71; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3); cursor: pointer;
+}
+.slider::-moz-range-track { height: 8px; border-radius: 6px; background: #e3e8e5; }
+.slider::-moz-range-progress { height: 8px; border-radius: 6px; background: #2ecc71; }
+
+/* Color Picker */
+.presets { width: 100%; }
+.picker-container {
+  display: inline-block;
+  padding: 14px;
+  background: #fbfefc;
+  border: 1px solid #e3f1ea;
+  border-radius: 14px;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.04);
+}
+
+#hueArea, #svArea { position: relative; width: 250px; }
+#svArea { margin-top: 14px; height: 150px; }
+
+#hueCanvas {
+  display: block;
+  width: 250px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+  cursor: pointer;
+}
+#svCanvas {
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  cursor: crosshair;
+}
+
+/* Curseur centré sur le point exact */
+.cursor { position: absolute; pointer-events: none; transform: translate(-50%, -50%); }
+
+/* Poignée verticale propre pour la barre de teinte (reste dans la barre) */
+#hueCursor {
+  top: 50%;
+  width: 8px;
+  height: 100%;
+  background: #fff;
+  border: 1.5px solid rgba(0,0,0,0.25);
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+
+/* Anneau net pour le carré saturation/valeur */
+#svCursor {
+  display: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px rgba(0,0,0,0.35), 0 1px 5px rgba(0,0,0,0.45);
+}
+
+/* Hex Input Group */
+.hex-group { margin-top: 15px; display: flex; gap: 10px; align-items: center; }
+#colorPreview {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  background: #ffffff;
+}
+.hex-field { flex: 1; }
+.hex-field label { font-size: 12px; color: #666; }
+.hex-field input { font-family: monospace; padding: 8px; }
+#applyHexBtn { margin-top: 18px; padding: 8px 15px; }
+
+/* Buttons & Status */
+.btn-auth, .btn-primary { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+.btn-secondary { background: #95a5a6; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+#scanStatus { font-size: 12px; color: #2ecc71; display: none; text-align: center; margin-bottom: 10px; }
+#placeholderMsg { text-align: center; color: #999; }
+#debugBtn { position: fixed; bottom: 10px; left: 10px; z-index: 999; }
+
+/* Planification */
+.schedule-card { margin-top: 1rem; }
+.sched-hint { font-size: 12px; color: #888; margin: 0 0 1rem; }
+
+/* Sélecteur de jours */
+.day-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.day-btn {
+  flex: 1 1 0; min-width: 38px;
+  padding: 8px 0; text-align: center;
+  background: #f4fdf7; color: #2d4a35;
+  border: 1px solid #d7ecdf; border-radius: 6px;
+  cursor: pointer; font-family: 'Ubuntu', sans-serif;
+  font-size: 0.82rem; font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.day-btn:hover { background: #e4f7ec; }
+.day-btn.selected { background: #2ecc71; color: #fff; border-color: #2ecc71; }
+.day-btn:active { transform: scale(0.95); }
+.day-quick { display: flex; gap: 10px; margin: 8px 0 4px; }
+.day-quick button {
+  background: none; border: none; color: #2ecc71; cursor: pointer;
+  font-size: 0.8rem; padding: 0; text-decoration: underline; font-family: 'Ubuntu', sans-serif;
+}
+#schedStatus { font-size: 13px; min-height: 1em; margin: 8px 0; }
+#schedUl { list-style: none; padding: 0; margin-top: 1rem; }
+.sched-item {
+  display: flex; align-items: center; gap: 10px;
+  background: #f4fdf7; border: 1px solid #e0f0e7;
+  border-radius: 6px; padding: 8px 12px; margin-bottom: 8px;
+}
+.sched-item.disabled { opacity: 0.5; }
+.sched-item input[type="checkbox"] { width: auto; flex-shrink: 0; }
+.sched-text { flex: 1; font-size: 13px; color: #2d4a35; }
+.sched-del {
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; flex-shrink: 0; line-height: 1;
+}
+.sched-empty { color: #999; font-size: 13px; font-style: italic; }
+
+/* Modals */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal.active { display: flex; align-items: center; justify-content: center; }
+.modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; position: relative; }
+.close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+.form-group { margin-bottom: 15px; }
+#resetStatus { font-size: 14px; margin: 10px 0; font-weight: bold; text-align: center; display: none; }
+small { color: #777; display: block; margin-top: 4px; }
+
+@media (max-width: 768px) { main { flex-direction: column; } }

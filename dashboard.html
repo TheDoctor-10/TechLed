@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>TechLED - Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/dashboard.css?v=4">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="TechLED Logo" class="logo">
+    <div id="userContainer"></div>
+
+    <div id="resetModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Paramètres du compte</h2>
+
+        <div class="form-group">
+          <label>Action :</label>
+          <select id="resetType" onchange="toggleResetFields()">
+            <option value="password">Réinitialiser le mot de passe</option>
+            <option value="email">Changer mon adresse e-mail</option>
+          </select>
+        </div>
+
+        <form id="resetForm">
+          <div id="passwordFields">
+            <div class="form-group">
+              <label>Email actuel :</label>
+              <input type="email" id="resetEmailInput" placeholder="Entrez l'adresse e-mail de votre compte">
+              <small>Un lien de réinitialisation sera envoyé à cette adresse.</small>
+            </div>
+          </div>
+
+          <div id="emailFields" style="display:none;">
+            <div class="form-group">
+              <label>Ancienne adresse e-mail :</label>
+              <input type="email" id="oldEmailInput" placeholder="Votre adresse e-mail actuelle">
+              <small>C’est l’adresse que vous utilisez actuellement pour vous connecter.</small>
+            </div>
+            <div class="form-group">
+              <label>Nouvelle adresse e-mail :</label>
+              <input type="email" id="newEmailInput" placeholder="Votre nouvelle adresse e-mail">
+              <small>Un lien de confirmation sera envoyé sur cette nouvelle adresse.</small>
+            </div>
+            <div class="form-group">
+              <label>Mot de passe actuel :</label>
+              <input type="password" id="passwordInput" placeholder="Votre mot de passe">
+              <small>Requis pour vérifier votre identité (sécurité Firebase).</small>
+            </div>
+          </div>
+
+          <div id="resetStatus"></div>
+          <button type="submit" class="btn-auth">Confirmer</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <aside class="lamp-list">
+      <h2>Mes Lampes</h2>
+      <div class="add-lamp">
+        <input type="text" id="manualIp" placeholder="Ex: 192.168.1.50">
+        <button onclick="validateAndAddIp()" class="btn-secondary">Vérifier & Ajouter</button>
+        <p id="addLampStatus"></p>
+      </div>
+      <ul id="lampUl"></ul>
+    </aside>
+
+    <section class="dashboard">
+      <div class="card">
+        <h3 id="currentLampName">Sélectionnez une lampe</h3>
+        <hr>
+        
+        <div id="wledControls">
+          <button class="btn-primary" onclick="sendWledHttp('T=2')">ALLUMER / ÉTEINDRE</button>
+          
+          <div class="control-group">
+            <label>Luminosité <span id="brightnessVal" class="value-badge">50%</span></label>
+            <div class="slider-row">
+              <span class="slider-ico">🔅</span>
+              <input type="range" id="brightnessSlider" min="0" max="255" value="128" class="slider">
+              <span class="slider-ico">🔆</span>
+            </div>
+          </div>
+
+          <div class="presets">
+            <label>Couleurs</label>
+            <div class="picker-container">
+              <div id="hueArea">
+                <canvas id="hueCanvas" width="250" height="24"></canvas>
+                <div id="hueCursor" class="cursor"></div>
+              </div>
+
+              <div id="svArea">
+                <canvas id="svCanvas" width="250" height="150"></canvas>
+                <div id="svCursor" class="cursor"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hex-group">
+            <div id="colorPreview" title="Aperçu de la couleur"></div>
+            <div class="hex-field">
+              <label>Code Hex (ex: #FF5733)</label>
+              <input type="text" id="hexInput" placeholder="#FFFFFF">
+            </div>
+            <button id="applyHexBtn" class="btn-secondary">Appliquer</button>
+          </div>
+
+          <div class="control-group">
+            <label>Mode / Effet</label>
+            <select id="wledEffects">
+              <option value="0">Chargement des effets...</option>
+            </select>
+          </div>
+        </div>
+
+        <p id="placeholderMsg">Utilisez le scan ou l'ajout manuel pour commencer.</p>
+      </div>
+
+      <div class="card schedule-card" id="scheduleCard" style="display:none;">
+        <h3>⏰ Planification</h3>
+        <hr>
+        <p class="sched-hint">Programmez des actions automatiques sur la lampe sélectionnée.
+          (Les tâches s'exécutent tant que cette page reste ouverte.)</p>
+
+        <div class="control-group">
+          <label>Heure</label>
+          <input type="time" id="schedTime">
+        </div>
+
+        <div class="control-group">
+          <label>Action</label>
+          <select id="schedAction">
+            <option value="on">Allumer</option>
+            <option value="off">Éteindre</option>
+            <option value="color">Couleur</option>
+            <option value="brightness">Luminosité</option>
+          </select>
+        </div>
+
+        <div class="control-group" id="schedValueGroup" style="display:none;">
+          <label id="schedValueLabel">Valeur</label>
+          <input type="text" id="schedValue">
+        </div>
+
+        <div class="control-group">
+          <label>Jours</label>
+          <div id="schedDays" class="day-picker">
+            <button type="button" class="day-btn" data-day="1">Lun</button>
+            <button type="button" class="day-btn" data-day="2">Mar</button>
+            <button type="button" class="day-btn" data-day="3">Mer</button>
+            <button type="button" class="day-btn" data-day="4">Jeu</button>
+            <button type="button" class="day-btn" data-day="5">Ven</button>
+            <button type="button" class="day-btn" data-day="6">Sam</button>
+            <button type="button" class="day-btn" data-day="0">Dim</button>
+          </div>
+          <div class="day-quick">
+            <button type="button" id="daysAll">Tous les jours</button>
+            <button type="button" id="daysNone">Une seule fois</button>
+          </div>
+          <small>Aucun jour sélectionné = exécution unique (à la prochaine occurrence de l'heure).</small>
+        </div>
+
+        <button id="addSchedBtn" class="btn-secondary">Ajouter la planification</button>
+        <p id="schedStatus"></p>
+
+        <ul id="schedUl"></ul>
+      </div>
+    </section>
+  </main>
+
+  <button id="debugBtn">DEBUG</button>
+
+  <div id="consentBanner" class="consent-banner" style="display:none;">
+    <span>🍪 Ce site utilise un stockage local strictement nécessaire (compte et lampes).
+      Aucun traceur publicitaire. <a href="privacy.html">En savoir plus</a>.</span>
+    <button id="consentAccept" class="btn-secondary">J'ai compris</button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" integrity="sha384-ajMUFBUFMCyjh8uxJg6bkGcKe9RTolyjwbxB3yES0QQMenP3Oztj/W9vA2SJPcIh" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" integrity="sha384-xD1t9dGSVKobUztxDkv6xUI0H4AnFz0NxwlgDJJ7FDlblG9xxr1Z9iauCZuJYj6p" crossorigin="anonymous"></script>
+  <script src="javascript/auth.js?v=7"></script>
+</body>
+</html>
