@@ -182,12 +182,9 @@ function sendWledHttpTo(ip, params) {
     }
     if (!ip || ip === "DEBUG_ACTIVE") return;
 
-    // En HTTPS, le navigateur refusera l'appel HTTP : on évite d'envoyer dans le vide.
-    if (IS_HTTPS) {
-        console.warn("[TechLED] Page en HTTPS → requête vers la lampe bloquée par le navigateur. Ouvrez le dashboard en http:// sur le réseau local.");
-        return;
-    }
-
+    // En HTTPS, le navigateur bloque par défaut (Mixed Content). On tente quand
+    // même : si l'utilisateur a autorisé le "contenu non sécurisé" pour le site,
+    // la requête passe. Sinon elle échoue proprement (catch).
     // Timeout : une lampe injoignable ne doit pas laisser la requête pendante.
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 4000);
@@ -223,6 +220,11 @@ function makeThrottle(fn, delay) {
     };
 }
 
+// Hooks pour appliquer un état SANS renvoyer de commande à la lampe
+// (utilisés lors de la récupération de l'état réel à la connexion).
+let _applyPickerRgb = null;     // (r,g,b) => maj du color picker
+let _applyBrightness = null;    // (0-255) => maj du slider
+
 // Slider de luminosité : affichage en %, remplissage visuel, envoi throttlé.
 function initBrightness() {
     const slider = document.getElementById("brightnessSlider");
@@ -240,6 +242,49 @@ function initBrightness() {
 
     slider.oninput = () => { refresh(); sendBri(slider.value); };
     refresh();
+
+    // Mise à jour sans envoi (sync depuis l'état réel)
+    _applyBrightness = (v) => {
+        slider.value = Math.max(0, Math.min(255, v));
+        refresh();
+    };
+}
+
+// Applique l'état renvoyé par /json/state à l'interface (sans renvoyer de commande).
+function applyLampState(state) {
+    if (!state) return;
+    if (typeof state.bri === "number" && _applyBrightness) _applyBrightness(state.bri);
+
+    const seg = state.seg && state.seg[0];
+    if (!seg) return;
+
+    if (seg.col && seg.col[0] && _applyPickerRgb) {
+        const c = seg.col[0];   // [r,g,b] ou [r,g,b,w]
+        _applyPickerRgb(c[0] || 0, c[1] || 0, c[2] || 0);
+    }
+    if (typeof seg.fx === "number") {
+        const sel = document.getElementById("wledEffects");
+        if (sel) sel.value = String(seg.fx);
+    }
+}
+
+// Récupère l'état réel de la lampe (couleur, luminosité, effet) et met l'UI à jour.
+function fetchAndApplyState(ip) {
+    if (!ip || ip === "DEBUG_ACTIVE") return;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3000);
+    // Requête CORS (lecture) : WLED renvoie Access-Control-Allow-Origin: *
+    fetch(`http://${ip}/json/state`, { signal: ctrl.signal })
+        .then(r => r.json())
+        .then(state => {
+            clearTimeout(timer);
+            applyLampState(state);
+            if (debugMode) console.log("%c[DEBUG] État lampe synchronisé", "color:#2ecc71;", state);
+        })
+        .catch(() => {
+            clearTimeout(timer);
+            if (debugMode) console.log("%c[DEBUG] État lampe non récupéré (injoignable/CORS)", "color:#e67e22;");
+        });
 }
 
 function populateEffects() {
@@ -301,6 +346,9 @@ function renderLampList() {
                 .forEach(el => el.classList.remove('active'));
 
             li.classList.add('active');
+
+            // Synchronise l'UI avec l'état réel de la lampe (couleur, luminosité, effet)
+            fetchAndApplyState(lamp.ip);
         };
 
         ul.appendChild(li);
@@ -316,7 +364,7 @@ function validateAndAddIp() {
     const showStatus = (msg, ok) => {
         if (!status) return;
         status.style.color = ok ? "#2ecc71" : "#e74c3c";
-        status.innerText = msg;
+        status.textContent = msg;
     };
 
     const ip = input.value.trim();
@@ -327,13 +375,25 @@ function validateAndAddIp() {
         return;
     }
 
-    addLampToList(ip, ip);
-    showStatus("Lampe ajoutée : " + ip, true);
-    input.value = "";
+    // Test de joignabilité : un appel no-cors vers la lampe résout si elle
+    // répond, et échoue (timeout) si l'IP/réseau est mauvais.
+    showStatus("Vérification de " + ip + "…", true);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3000);
 
-    if (debugMode) {
-        console.log(`%c[DEBUG] Lampe ajoutée manuellement : ${ip}`, "color: #2ecc71;");
-    }
+    fetch(`http://${ip}/json/info`, { mode: "no-cors", signal: ctrl.signal })
+        .then(() => {
+            clearTimeout(timer);
+            addLampToList(ip, ip);
+            input.value = "";
+            showStatus("✅ Lampe joignable — ajoutée : " + ip, true);
+        })
+        .catch(() => {
+            clearTimeout(timer);
+            addLampToList(ip, ip);   // on l'ajoute quand même (peut être éteinte)
+            input.value = "";
+            showStatus("⚠️ Injoignable à " + ip + " — vérifiez le réseau/l'IP. (Ajoutée quand même)", false);
+        });
 }
 
 // -----------------------------------------------------
@@ -555,6 +615,19 @@ function initColorPicker() {
     if (hexInput) hexInput.value = "#" + initHex.toUpperCase();
     const preview = document.getElementById("colorPreview");
     if (preview) preview.style.background = "#" + initHex;
+
+    // Hook : applique une couleur (r,g,b) au picker SANS la renvoyer à la lampe
+    // (utilisé pour refléter l'état réel récupéré à la connexion).
+    _applyPickerRgb = (r, g, b) => {
+        const hsv = rgbToHsv(r, g, b);
+        hue = hsv.h; sat = hsv.s; val = hsv.v;
+        drawSV();
+        updateHueCursor();
+        updateSvCursor();
+        const hex = [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
+        if (hexInput) hexInput.value = "#" + hex.toUpperCase();
+        if (preview) preview.style.background = "#" + hex;
+    };
 }
 
 // -----------------------------------------------------
@@ -972,11 +1045,15 @@ document.addEventListener("DOMContentLoaded", () => {
         initColorPicker();
         initBrightness();
 
-        // Avertit si la page est en HTTPS (contrôle de la lampe impossible)
+        // Sur un site HTTPS, le navigateur bloque par défaut les appels vers la
+        // lampe (HTTP). On explique comment l'autoriser pour CE site.
         if (IS_HTTPS) {
             const w = document.getElementById("httpsWarning");
             if (w) {
-                w.textContent = "⚠️ Page en HTTPS : le navigateur empêche le contrôle de la lampe (WLED fonctionne en HTTP). Ouvrez le dashboard via http:// sur votre réseau local (ex. http://localhost:8000/dashboard.html) pour piloter vos lampes.";
+                w.innerHTML = "⚠️ <b>Site en HTTPS</b> : par défaut le navigateur bloque le contrôle de la lampe (qui fonctionne en HTTP). " +
+                    "Pour piloter ta lampe depuis ce site en ligne : clique sur l'icône <b>🔒 / ⚙</b> à gauche de l'adresse → " +
+                    "<b>Paramètres du site</b> → <b>Contenu non sécurisé</b> → <b>Autoriser</b>, puis recharge la page. " +
+                    "(Ton appareil doit être sur le même réseau Wi-Fi que la lampe.)";
                 w.style.display = "block";
             }
         }
