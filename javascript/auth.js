@@ -123,7 +123,18 @@ function renderLoggedIn(container, user) {
 
     const resetBtn = document.createElement("button");
     resetBtn.textContent = "Paramètres / Reset";
-    resetBtn.onclick = () => document.getElementById("resetModal").classList.add("active");
+    resetBtn.onclick = () => {
+        const m = document.getElementById("resetModal");
+        if (!m) return;
+        // Repart d'un état propre à chaque ouverture
+        const sel = document.getElementById("resetType");
+        if (sel) sel.value = "password";
+        toggleResetFields();
+        const st = document.getElementById("resetStatus");
+        if (st) { st.textContent = ""; st.style.display = "none"; }
+        if (menu) menu.style.display = "none";   // ferme le menu utilisateur
+        m.classList.add("active");
+    };
 
     const logoutBtn = document.createElement("button");
     logoutBtn.textContent = "Déconnexion";
@@ -660,7 +671,7 @@ function initResetForm() {
         if (!status) return;
         status.style.display = "block";
         status.style.color = ok ? "#2ecc71" : "#e74c3c";
-        status.innerText = msg;
+        status.textContent = msg;
     };
 
     resetForm.onsubmit = (e) => {

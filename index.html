@@ -14,53 +14,6 @@
     <nav id="userContainer">
       <button id="authBtn" class="btn-outline">Connexion / Inscription</button>
     </nav>
-
-  <div id="resetModal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>Paramètres du compte</h2>
-
-        <div class="form-group">
-          <label>Action :</label>
-          <select id="resetType" onchange="toggleResetFields()">
-            <option value="password">Réinitialiser le mot de passe</option>
-            <option value="email">Changer mon adresse e-mail</option>
-          </select>
-        </div>
-
-        <form id="resetForm">
-          <div id="passwordFields">
-            <div class="form-group">
-              <label>Email actuel :</label>
-              <input type="email" id="resetEmailInput" placeholder="Entrez l'adresse e-mail de votre compte">
-              <small>Un lien de réinitialisation sera envoyé à cette adresse.</small>
-            </div>
-          </div>
-
-          <div id="emailFields" style="display:none;">
-            <div class="form-group">
-              <label>Ancienne adresse e-mail :</label>
-              <input type="email" id="oldEmailInput" placeholder="Votre adresse e-mail actuelle">
-              <small>C'est l'adresse que vous utilisez actuellement pour vous connecter.</small>
-            </div>
-            <div class="form-group">
-              <label>Nouvelle adresse e-mail :</label>
-              <input type="email" id="newEmailInput" placeholder="Votre nouvelle adresse e-mail">
-              <small>Un lien de confirmation sera envoyé sur cette nouvelle adresse.</small>
-            </div>
-            <div class="form-group">
-              <label>Mot de passe actuel :</label>
-              <input type="password" id="passwordInput" placeholder="Votre mot de passe">
-              <small>Requis pour vérifier votre identité (sécurité Firebase).</small>
-            </div>
-          </div>
-
-          <div id="resetStatus"></div>
-          <button type="submit" class="btn-auth">Confirmer</button>
-        </form>
-      </div>
-    </div>
-
   </header>
 
   <main>
@@ -135,6 +88,52 @@
     <button id="consentAccept" class="btn-secondary">J'ai compris</button>
   </div>
 
+  <div id="resetModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Paramètres du compte</h2>
+
+      <div class="form-group">
+        <label>Action :</label>
+        <select id="resetType" onchange="toggleResetFields()">
+          <option value="password">Réinitialiser le mot de passe</option>
+          <option value="email">Changer mon adresse e-mail</option>
+        </select>
+      </div>
+
+      <form id="resetForm">
+        <div id="passwordFields">
+          <div class="form-group">
+            <label>Email actuel :</label>
+            <input type="email" id="resetEmailInput" placeholder="Entrez l'adresse e-mail de votre compte">
+            <small>Un lien de réinitialisation sera envoyé à cette adresse.</small>
+          </div>
+        </div>
+
+        <div id="emailFields" style="display:none;">
+          <div class="form-group">
+            <label>Ancienne adresse e-mail :</label>
+            <input type="email" id="oldEmailInput" placeholder="Votre adresse e-mail actuelle">
+            <small>C'est l'adresse que vous utilisez actuellement pour vous connecter.</small>
+          </div>
+          <div class="form-group">
+            <label>Nouvelle adresse e-mail :</label>
+            <input type="email" id="newEmailInput" placeholder="Votre nouvelle adresse e-mail">
+            <small>Un lien de confirmation sera envoyé sur cette nouvelle adresse.</small>
+          </div>
+          <div class="form-group">
+            <label>Mot de passe actuel :</label>
+            <input type="password" id="passwordInput" placeholder="Votre mot de passe">
+            <small>Requis pour vérifier votre identité (sécurité Firebase).</small>
+          </div>
+        </div>
+
+        <div id="resetStatus"></div>
+        <button type="submit" class="btn-auth">Confirmer</button>
+      </form>
+    </div>
+  </div>
+
   <div id="authModal" class="modal">
     <div class="modal-content">
       <span class="close-btn">&times;</span>
@@ -165,6 +164,6 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" integrity="sha384-ajMUFBUFMCyjh8uxJg6bkGcKe9RTolyjwbxB3yES0QQMenP3Oztj/W9vA2SJPcIh" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" integrity="sha384-xD1t9dGSVKobUztxDkv6xUI0H4AnFz0NxwlgDJJ7FDlblG9xxr1Z9iauCZuJYj6p" crossorigin="anonymous"></script>
-  <script src="javascript/auth.js?v=7"></script>
+  <script src="javascript/auth.js?v=8"></script>
 </body>
 </html>
