@@ -1053,15 +1053,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (w && safeLocalGet("techled_https_hidden") !== "1") {
                 w.innerHTML =
                     "<button class='https-close' title='Masquer'>&times;</button>" +
-                    "⚠️ <b>Site en HTTPS</b> : pour piloter ta lampe (qui fonctionne en HTTP), autorise <b>une seule fois</b> le « contenu non sécurisé » :" +
-                    "<ol style='margin:8px 0 0 18px; padding:0;'>" +
-                    "<li>Clique sur l'icône <b>🔒</b> (ou ⚙ / glissières) à gauche de l'adresse.</li>" +
-                    "<li>Ouvre <b>Paramètres du site</b>.</li>" +
-                    "<li>Trouve <b>Contenu non sécurisé</b> (Insecure content) → choisis <b>Autoriser</b>.</li>" +
-                    "<li><b>Recharge</b> la page.</li>" +
-                    "</ol>" +
-                    "<small>Ton appareil doit être sur le même réseau Wi-Fi que la lampe. " +
-                    "(Le passage en http:// est impossible sur github.io, qui force le HTTPS.)</small>";
+                    "⚠️ <b>Site en HTTPS</b> : pour piloter ta lampe (qui fonctionne en HTTP), autorise <b>une fois</b> le « contenu non sécurisé » :" +
+                    "<ul style='margin:8px 0 0 18px; padding:0;'>" +
+                    "<li><b>Chrome / Edge</b> : icône 🔒 à gauche de l'adresse → <b>Paramètres du site</b> → <b>Contenu non sécurisé</b> → <b>Autoriser</b> → recharger.</li>" +
+                    "<li><b>Firefox</b> : <b>about:config</b> → cherche <b>security.mixed_content.block_active_content</b> → mets-le sur <b>false</b> → recharger. (ou icône bouclier 🛡 → « Désactiver la protection pour le moment »)</li>" +
+                    "</ul>" +
+                    "<small>Ton appareil doit être sur le même réseau Wi-Fi que la lampe, avec la bonne IP.</small>";
                 w.style.display = "block";
                 const close = w.querySelector(".https-close");
                 if (close) close.onclick = () => {
