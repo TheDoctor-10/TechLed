@@ -6,7 +6,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>TechLED - Dashboard</title>
   <link rel="stylesheet" href="css/style.css?v=4">
-  <link rel="stylesheet" href="css/dashboard.css?v=4">
+  <link rel="stylesheet" href="css/dashboard.css?v=5">
 </head>
 <body>
   <header>
@@ -75,7 +75,9 @@
       <div class="card">
         <h3 id="currentLampName">Sélectionnez une lampe</h3>
         <hr>
-        
+
+        <p id="httpsWarning" class="https-warning" style="display:none;"></p>
+
         <div id="wledControls">
           <button class="btn-primary" onclick="sendWledHttp('T=2')">ALLUMER / ÉTEINDRE</button>
           
@@ -185,6 +187,6 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" integrity="sha384-ajMUFBUFMCyjh8uxJg6bkGcKe9RTolyjwbxB3yES0QQMenP3Oztj/W9vA2SJPcIh" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" integrity="sha384-xD1t9dGSVKobUztxDkv6xUI0H4AnFz0NxwlgDJJ7FDlblG9xxr1Z9iauCZuJYj6p" crossorigin="anonymous"></script>
-  <script src="javascript/auth.js?v=8"></script>
+  <script src="javascript/auth.js?v=9"></script>
 </body>
 </html>

@@ -170,18 +170,34 @@ if (auth) {
 // 2. LOGIQUE WLED (HTTP UNIQUEMENT)
 // -----------------------------------------------------
 
+// La lampe WLED ne répond qu'en HTTP. Si la page est en HTTPS, le navigateur
+// bloque toute requête HTTP (Mixed Content) → impossible de la piloter.
+const IS_HTTPS = (typeof window !== "undefined") && window.location && window.location.protocol === "https:";
+
 // Envoi vers une IP précise (utilisé aussi par le planificateur).
 function sendWledHttpTo(ip, params) {
     if (debugMode) {
         console.log(`%c[DEBUG] HTTP Send (${ip}) -> ${params}`, "color: cyan; background: #222;");
         if (ip === "DEBUG_ACTIVE") return;
     }
-    if (!ip) return;
+    if (!ip || ip === "DEBUG_ACTIVE") return;
 
-    fetch(`http://${ip}/win&${params}`, { mode: "no-cors" })
+    // En HTTPS, le navigateur refusera l'appel HTTP : on évite d'envoyer dans le vide.
+    if (IS_HTTPS) {
+        console.warn("[TechLED] Page en HTTPS → requête vers la lampe bloquée par le navigateur. Ouvrez le dashboard en http:// sur le réseau local.");
+        return;
+    }
+
+    // Timeout : une lampe injoignable ne doit pas laisser la requête pendante.
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 4000);
+
+    fetch(`http://${ip}/win&${params}`, { mode: "no-cors", signal: ctrl.signal })
+        .then(() => clearTimeout(timer))
         .catch(() => {
+            clearTimeout(timer);
             if (debugMode) {
-                console.log(`%c[DEBUG] ❌ Erreur envoi vers ${ip}`, "color: #e74c3c;");
+                console.log(`%c[DEBUG] ❌ Échec/timeout vers ${ip} (lampe injoignable ?)`, "color: #e74c3c;");
             }
         });
 }
@@ -955,6 +971,15 @@ document.addEventListener("DOMContentLoaded", () => {
         renderLampList();
         initColorPicker();
         initBrightness();
+
+        // Avertit si la page est en HTTPS (contrôle de la lampe impossible)
+        if (IS_HTTPS) {
+            const w = document.getElementById("httpsWarning");
+            if (w) {
+                w.textContent = "⚠️ Page en HTTPS : le navigateur empêche le contrôle de la lampe (WLED fonctionne en HTTP). Ouvrez le dashboard via http:// sur votre réseau local (ex. http://localhost:8000/dashboard.html) pour piloter vos lampes.";
+                w.style.display = "block";
+            }
+        }
 
         const dbBtn = document.getElementById("debugBtn");
 
