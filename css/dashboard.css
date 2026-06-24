@@ -146,11 +146,18 @@ select {
 #scanStatus { font-size: 12px; color: #2ecc71; display: none; text-align: center; margin-bottom: 10px; }
 #placeholderMsg { text-align: center; color: #999; }
 .https-warning {
+  position: relative;
   background: #fff4e5; color: #8a4b00;
   border: 1px solid #ffd9a8; border-left: 4px solid #e67e22;
-  border-radius: 6px; padding: 10px 12px; font-size: 13px; line-height: 1.5;
+  border-radius: 6px; padding: 10px 34px 10px 12px; font-size: 13px; line-height: 1.5;
   margin-bottom: 1rem;
 }
+.https-close {
+  position: absolute; top: 6px; right: 8px;
+  background: none; border: none; cursor: pointer;
+  font-size: 18px; line-height: 1; color: #8a4b00; padding: 2px 6px;
+}
+.https-close:hover { color: #e67e22; }
 #debugBtn { position: fixed; bottom: 10px; left: 10px; z-index: 999; }
 
 /* Planification */

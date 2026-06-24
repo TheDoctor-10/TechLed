@@ -1046,12 +1046,13 @@ document.addEventListener("DOMContentLoaded", () => {
         initBrightness();
 
         // Sur un site HTTPS (ex. github.io, qui force le HTTPS), le navigateur
-        // bloque les appels HTTP vers la lampe. Seule solution : autoriser une
-        // fois le "contenu non sécurisé" pour ce site.
+        // bloque les appels HTTP vers la lampe. On informe une fois, avec une
+        // croix pour masquer définitivement le bandeau.
         if (IS_HTTPS) {
             const w = document.getElementById("httpsWarning");
-            if (w) {
+            if (w && safeLocalGet("techled_https_hidden") !== "1") {
                 w.innerHTML =
+                    "<button class='https-close' title='Masquer'>&times;</button>" +
                     "⚠️ <b>Site en HTTPS</b> : pour piloter ta lampe (qui fonctionne en HTTP), autorise <b>une seule fois</b> le « contenu non sécurisé » :" +
                     "<ol style='margin:8px 0 0 18px; padding:0;'>" +
                     "<li>Clique sur l'icône <b>🔒</b> (ou ⚙ / glissières) à gauche de l'adresse.</li>" +
@@ -1062,6 +1063,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     "<small>Ton appareil doit être sur le même réseau Wi-Fi que la lampe. " +
                     "(Le passage en http:// est impossible sur github.io, qui force le HTTPS.)</small>";
                 w.style.display = "block";
+                const close = w.querySelector(".https-close");
+                if (close) close.onclick = () => {
+                    w.style.display = "none";
+                    safeLocalSet("techled_https_hidden", "1");
+                };
             }
         }
 
