@@ -1046,14 +1046,26 @@ document.addEventListener("DOMContentLoaded", () => {
         initBrightness();
 
         // Sur un site HTTPS, le navigateur bloque par défaut les appels vers la
-        // lampe (HTTP). On explique comment l'autoriser pour CE site.
+        // lampe (HTTP). On propose la bascule HTTP (1 clic) + l'option "autoriser".
         if (IS_HTTPS) {
             const w = document.getElementById("httpsWarning");
             if (w) {
-                w.innerHTML = "⚠️ <b>Site en HTTPS</b> : par défaut le navigateur bloque le contrôle de la lampe (qui fonctionne en HTTP). " +
-                    "Pour piloter ta lampe depuis ce site en ligne : clique sur l'icône <b>🔒 / ⚙</b> à gauche de l'adresse → " +
-                    "<b>Paramètres du site</b> → <b>Contenu non sécurisé</b> → <b>Autoriser</b>, puis recharge la page. " +
-                    "(Ton appareil doit être sur le même réseau Wi-Fi que la lampe.)";
+                w.innerHTML = "⚠️ <b>Site en HTTPS</b> : le navigateur bloque par sécurité le contrôle de la lampe (qui fonctionne en HTTP). " +
+                    "Le plus simple est d'ouvrir ce site en HTTP :";
+
+                const btn = document.createElement("button");
+                btn.textContent = "🔓 Passer en HTTP";
+                btn.className = "btn-secondary";
+                btn.style.cssText = "display:block; margin:8px 0; width:auto;";
+                btn.onclick = () => { window.location.href = window.location.href.replace(/^https:/i, "http:"); };
+                w.appendChild(btn);
+
+                const hint = document.createElement("small");
+                hint.innerHTML = "Autre option (pour rester en HTTPS) : icône <b>🔒</b> → <b>Paramètres du site</b> → " +
+                    "<b>Contenu non sécurisé</b> → <b>Autoriser</b>, puis recharger. " +
+                    "Dans tous les cas, ton appareil doit être sur le même réseau Wi-Fi que la lampe.";
+                w.appendChild(hint);
+
                 w.style.display = "block";
             }
         }
